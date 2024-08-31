@@ -2,7 +2,8 @@ from aws_cdk import (
     Duration,
     Stack,
     aws_lambda as _lambda,
-    # aws_sqs as sqs,
+    aws_s3 as s3,
+    aws_apigateway as apigateway,
 )
 from constructs import Construct
 
@@ -18,11 +19,20 @@ class PhotoskyStack(Stack):
             environment= {
             },            
             code=_lambda.DockerImageCode.from_image_asset(
-                directory="."
+                directory="src"
             ),
             timeout=Duration.seconds(300)
         )
-        api = apigateway.LambdaRestApi(self, "myapi",
-    handler=backend,
-    proxy=False
-)
+
+        api = apigateway.LambdaRestApi(self, "api",
+            handler=dockerFunc,
+            proxy=True
+        )
+
+        bucket = s3.Bucket(
+            self, 
+            id=f"id{construct_id.lower()}", 
+            bucket_name=f"{construct_id.lower()}" # Provide a bucket name here
+        )
+
+        bucket.grant_read_write(dockerFunc)
