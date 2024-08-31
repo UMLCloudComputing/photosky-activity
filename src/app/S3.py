@@ -1,11 +1,57 @@
 import boto3
 import logging
+from PIL import Image
+import io
 from botocore.exceptions import ClientError
 
 class S3:
     def __init__(self, bucket_name):
         self.client = boto3.client('s3')
         self.bucket_name = bucket_name
+
+    def create_preview_image(self, object_name):
+        '''
+        Create a preview image from the original image
+        This image will be displayed in the gallery.
+        '''
+        try:
+            # Download the original image from S3
+            original_image = self.client.get_object(Bucket=self.bucket_name, Key=object_name)
+            image_data = original_image['Body'].read()
+
+            # Open the image using Pillow
+            image = Image.open(io.BytesIO(image_data))
+
+            # Calculate the cropping box to make the image square
+            width, height = image.size
+            min_dimension = min(width, height)
+            left = (width - min_dimension) / 2
+            top = (height - min_dimension) / 2
+            right = (width + min_dimension) / 2
+            bottom = (height + min_dimension) / 2
+
+            # Crop the image to a square
+            cropped = image.crop((left, top, right, bottom))
+
+            # Create a low-resolution preview (e.g., 100x100 pixels)
+            preview_image = cropped.resize((100, 100))
+
+            # Save the preview image to a BytesIO object
+            preview_image_bytes = io.BytesIO()
+            preview_image.save(preview_image_bytes, format=image.format)
+            preview_image_bytes.seek(0)
+
+            # Define the preview image object name
+            preview_object_name = f"preview_{object_name}"
+
+            # Upload the preview image back to S3
+            self.client.put_object(Bucket=self.bucket_name, Key=preview_object_name, Body=preview_image_bytes)
+
+            return preview_object_name
+
+        except ClientError as e:
+            logging.error(e)
+            return None
 
     def create_presigned_post(self, object_name,
                             fields=None, conditions=None, expiration=3600):
@@ -69,6 +115,7 @@ class S3:
 
 if __name__ == '__main__':
     s3 = S3('photoskydevelop')
-    print(s3.create_presigned_post('delorean.jpg'))
-    print(s3.create_presigned_get('delorean.jpg'))
+    # print(s3.create_presigned_post('delorean.jpg'))
+    # print(s3.create_presigned_get('delorean.jpg'))
+    print(s3.create_preview_image('delorean.jpg'))
     
