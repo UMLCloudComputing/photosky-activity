@@ -17,6 +17,7 @@ class PhotoskyStack(Stack):
             id=f"ID{construct_id}",
             function_name=construct_id,
             environment= {
+                "BUCKET_NAME": f"{construct_id.lower()}"
             },            
             code=_lambda.DockerImageCode.from_image_asset(
                 directory="src"
