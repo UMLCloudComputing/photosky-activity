@@ -16,7 +16,9 @@ def handler(event, context):
         case 'GET':
             if query and query.get('preview'):
                 if s3.object_exists(path.lstrip('/')):
-                    response = s3.create_preview_image(path.lstrip('/'))
+                    if not s3.object_exists("preview_" + filename):
+                        print("Cache Miss")
+                        response = s3.create_preview_image(path.lstrip('/'))
                     filename = "preview_" + filename
                 else:
                     return {
