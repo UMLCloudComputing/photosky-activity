@@ -8,6 +8,13 @@ class S3:
     def __init__(self, bucket_name):
         self.client = boto3.client('s3')
         self.bucket_name = bucket_name
+    
+    def object_exists(self, object_name):
+        try:
+            self.client.head_object(Bucket=self.bucket_name, Key=object_name)
+            return True
+        except ClientError:
+            return False
 
     def create_preview_image(self, object_name):
         '''
@@ -117,5 +124,6 @@ if __name__ == '__main__':
     s3 = S3('photoskydevelop')
     # print(s3.create_presigned_post('delorean.jpg'))
     # print(s3.create_presigned_get('delorean.jpg'))
+    print(s3.object_exists('delorean.jpg'))
     print(s3.create_preview_image('delorean.jpg'))
     
