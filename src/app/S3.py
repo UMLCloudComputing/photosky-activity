@@ -16,7 +16,7 @@ class S3:
         except ClientError:
             return False
 
-    def create_preview_image(self, object_name):
+    def create_preview_image(self, object_name, result_width=100, result_height=100):
         '''
         Create a preview image from the original image
         This image will be displayed in the gallery.
@@ -41,7 +41,7 @@ class S3:
             cropped = image.crop((left, top, right, bottom))
 
             # Create a low-resolution preview (e.g., 100x100 pixels)
-            preview_image = cropped.resize((100, 100))
+            preview_image = cropped.resize((result_width, result_height))
 
             # Save the preview image to a BytesIO object
             preview_image_bytes = io.BytesIO()
@@ -114,6 +114,28 @@ class S3:
         # The response contains the presigned URL
         return response
 
+    def create_presigned_list(self, object_name, expiration=3600):
+        """Generate a presigned URL to share an S3 object
+
+        :param bucket_name: string
+        :param object_name: string
+        :param expiration: Time in seconds for the presigned URL to remain valid
+        :return: Presigned URL as string. If error, returns None.
+        """
+
+        try:
+            response = self.client.generate_presigned_url(
+                'list_objects',
+                Params={'Bucket': self.bucket_name},
+                ExpiresIn=expiration
+            )
+        except ClientError as e:
+            logging.error(e)
+            return None
+
+        # The response contains the presigned URL
+        return response
+
     # def upload(self, bucket, key, data):
     #     self.client.put_object(Bucket=bucket, Key=key, Body=data)
 
@@ -124,6 +146,7 @@ if __name__ == '__main__':
     s3 = S3('photoskydevelop')
     # print(s3.create_presigned_post('delorean.jpg'))
     # print(s3.create_presigned_get('delorean.jpg'))
-    print(s3.object_exists('delorean.jpg'))
-    print(s3.create_preview_image('delorean.jpg'))
+    # print(s3.object_exists('delorean.jpg'))
+    print(s3.create_preview_image('delorean.jpg', 200, 200))
+    # print(s3.create_presigned_list("delorean.jpg"))
     
