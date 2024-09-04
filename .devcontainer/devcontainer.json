@@ -1,0 +1,20 @@
+{
+    "name": "Dev Container with Desktop",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "features": {
+        "ghcr.io/devcontainers/features/desktop-lite:1": {
+            "password": "vscode",
+            "webPort": 6080,
+            "vncPort": 5901
+        },
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    "forwardPorts": [6080, 5901],
+    "portsAttributes": {
+        "6080": {
+            "label": "desktop"
+        }
+    }
+}
