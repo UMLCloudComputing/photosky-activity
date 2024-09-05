@@ -1,7 +1,7 @@
 FROM mcr.microsoft.com/vscode/devcontainers/universal:2-linux
 
 # Install Fluxbox and other necessary packages for desktop-lite
-RUN apt-get update && apt-get install -y fluxbox x11vnc xvfb
+RUN apt-get update && apt-get install -y fluxbox x11vnc xvfb bridge-utils cpu-checker libvirt-clients libvirt-daemon qemu qemu-kvm
 
 # Set environment variables to prevent interactive prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
@@ -16,7 +16,6 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     sudo \
     software-properties-common \
-    # openjdk-18-jdk \
     && rm -rf /var/lib/apt/lists/*
 
 # Check Java installation
