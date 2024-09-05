@@ -1,3 +1,4 @@
+
 {
     "name": "Dev Container with Desktop",
     "build": {
@@ -16,5 +17,8 @@
         "6080": {
             "label": "desktop"
         }
+    },
+    "remoteEnv": {
+        "CAPACITOR_ANDROID_STUDIO_PATH": "/opt/android-studio-2024.1.2/android-studio/bin/studio.sh"
     }
 }
