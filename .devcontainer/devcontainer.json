@@ -21,5 +21,16 @@
     "remoteEnv": {
         "CAPACITOR_ANDROID_STUDIO_PATH": "/opt/android-studio-2024.1.2/android-studio/bin/studio.sh"
     },
-    "postCreateCommand": "sudo chown $USER:$USER $ANDROID_HOME -R"
+    "postCreateCommand": "sudo chown $USER:$USER $ANDROID_HOME -R",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "antfu.browse-lite",
+                "ms-azuretools.vscode-docker",
+                "GitHub.copilot",
+                "GitHub.copilot-chat",
+                "bierner.markdown-preview-github-styles"
+            ]
+        }
+    }
 }
