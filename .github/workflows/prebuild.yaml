@@ -34,9 +34,9 @@ jobs:
       - name: Build and push Dev Container image
         uses: devcontainers/ci@v0.3
         with:
-          # The full name of the image, including the registry and repo
-          imageName: ghcr.io/uMLCloudComputing/photosky-devcontainer
+          # Use the organization name in lowercase for the image name
+          imageName: ghcr.io/umlcloudcomputing/photosky-devcontainer
           # Optionally, reuse cached layers from the existing image
-          cacheFrom: ghcr.io/uMLCloudComputing/photosky-devcontainer
+          cacheFrom: ghcr.io/umlcloudcomputing/photosky-devcontainer
           # Always push the image to the container registry
           push: always
