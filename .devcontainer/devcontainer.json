@@ -1,9 +1,10 @@
 
 {
     "name": "Dev Container with Desktop",
-    "build": {
-        "dockerfile": "Dockerfile"
-    },
+    "image": "ghcr.io/umlcloudcomputing/photosky-devcontainer:latest",
+    // "build": {
+    //     "dockerfile": "Dockerfile"
+    // },
     "features": {
         "ghcr.io/devcontainers/features/desktop-lite:1": {
             "password": "vscode",
