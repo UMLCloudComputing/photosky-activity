@@ -21,7 +21,8 @@
     "remoteEnv": {
         "CAPACITOR_ANDROID_STUDIO_PATH": "/opt/android-studio-2024.1.2/android-studio/bin/studio.sh"
     },
-    "postCreateCommand": "sudo adduser $USER kvm && sudo chown $USER /dev/kvm && sudo chown $USER:$USER $ANDROID_HOME -R && echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties",
+    "postCreateCommand": "sudo adduser $USER kvm && sudo chown $USER /dev/kvm && sudo chown $USER:$USER $ANDROID_HOME -R",
+    "postStartCommand": "echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties",
     "hostRequirements": {
         "cpus": 4,
         "memory": "16gb"
