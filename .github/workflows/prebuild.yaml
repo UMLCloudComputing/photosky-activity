@@ -1,6 +1,20 @@
-- name: Pre-build dev container image
-  uses: devcontainers/ci@v0.3
-  with:
-    imageName: ghcr.io/UMLCloudComputing/photosky
-    cacheFrom: ghcr.io/UMLCloudComputing/photosky
-    push: always
+name: Prebuild Codespaces
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  prebuild:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Pre-build dev container image
+      uses: devcontainers/ci@v0.3
+      with:
+        imageName: ghcr.io/UMLCloudComputing/photosky
+        cacheFrom: ghcr.io/UMLCloudComputing/photosky
+        push: always
