@@ -26,7 +26,8 @@
     "postStartCommand": "echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties",
     "hostRequirements": {
         "cpus": 4,
-        "memory": "16gb"
+        "memory": "16gb",
+        "storage": "50gb"
     },
     "customizations": {
         "vscode": {
