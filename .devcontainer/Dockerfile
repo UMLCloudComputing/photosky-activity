@@ -43,3 +43,14 @@ RUN sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
 
 # Clean up
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Switch back to non-root
+USER codespace
+
+# Install AWS CLI v2
+COPY --from=amazon/aws-cli:latest /usr/local/aws-cli/ /usr/local/aws-cli/
+RUN sudo ln -s /usr/local/aws-cli/v2/current/bin/aws /usr/local/bin/aws && \
+    sudo ln -s /usr/local/aws-cli/v2/current/bin/aws_completer /usr/local/bin/aws_completer
+
+# Install AWS CDK globally
+RUN npm install -g aws-cdk

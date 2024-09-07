@@ -20,9 +20,12 @@
         }
     },
     "remoteEnv": {
-        "CAPACITOR_ANDROID_STUDIO_PATH": "/opt/android-studio-2024.1.2/android-studio/bin/studio.sh"
+        "CAPACITOR_ANDROID_STUDIO_PATH": "/opt/android-studio-2024.1.2/android-studio/bin/studio.sh",
+        "AWS_ACCESS_KEY_ID": "${localEnv:AWS_ACCESS_KEY_ID}",
+        "AWS_SECRET_ACCESS_KEY": "${localEnv:AWS_SECRET_ACCESS_KEY}",
+        "AWS_DEFAULT_REGION": "${localEnv:AWS_DEFAULT_REGION}"
     },
-    "postCreateCommand": "sudo adduser $USER kvm && sudo chown $USER /dev/kvm && sudo chown $USER:$USER $ANDROID_HOME -R",
+    "postCreateCommand": "sudo adduser $USER kvm && (sudo test -e /dev/kvm && sudo chown $USER /dev/kvm || true) && sudo chown $USER:$USER $ANDROID_HOME -R",
     "postStartCommand": "echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties",
     "hostRequirements": {
         "cpus": 4,
