@@ -19,6 +19,7 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
+    "dotenv": "^16.4.5",
     "jeep-sqlite": "^2.8.0",
     "notistack": "^3.0.1",
     "react": "^18.3.1",
@@ -27,8 +28,9 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
+    "start": "npm run copy-env && react-scripts start",
+    "build": "npm run copy-env && react-scripts build",
+    "copy-env": "copyfiles ../.env .env",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -51,6 +53,7 @@
     ]
   },
   "devDependencies": {
-    "@capacitor/cli": "^6.1.2"
+    "@capacitor/cli": "^6.1.2",
+    "copyfiles": "^2.4.1"
   }
 }
