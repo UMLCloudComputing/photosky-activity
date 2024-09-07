@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="photosky/public/PhotoSky.png" alt="PhotoSky" width="400" height="400">
+  <img src="photosky/public/PhotoSky.png" alt="PhotoSky" width="250" height="250">
 </div>
 
 <div align="center">
