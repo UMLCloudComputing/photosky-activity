@@ -1,29 +1,16 @@
-# API Deployment Instrctions
+<div align="center">
+  <img src="photosky/public/PhotoSky.png" alt="PhotoSky" width="400" height="400">
+</div>
 
-Create an `.env` file, and add the following environment variables:
-```
-APP_NAME=your-app-name
-```
+<div align="center">
 
-Run the following commands from the root directory:
-```
-cdk bootstrap
-cdk deploy
-```
+[![Contributors](https://img.shields.io/github/contributors/UMLCloudComputing/photosky.svg?style=for-the-badge)](https://github.com/UMLCloudComputing/photosky/graphs/contributors)
+[![Forks](https://img.shields.io/github/forks/UMLCloudComputing/photosky.svg?style=for-the-badge)](https://github.com/UMLCloudComputing/photosky/network/members)
+[![Stargazers](https://img.shields.io/github/stars/UMLCloudComputing/photosky.svg?style=for-the-badge)](https://github.com/UMLCloudComputing/photosky/stargazers)
+[![Issues](https://img.shields.io/github/issues/UMLCloudComputing/photosky.svg?style=for-the-badge)](https://github.com/UMLCloudComputing/photosky/issues)
+[![MIT License](https://img.shields.io/github/license/UMLCloudComputing/photosky.svg?style=for-the-badge)](https://github.com/UMLCloudComputing/photosky/blob/master/LICENSE)
+</div>
 
-One of the outputs will be the API Gateway URL. You can use this URL to access the API.
+## 📘 About PhotoSky
 
-# API Instructions
-
-Executing
-```curl -X GET https://{RANDOM_STRING}.execute-api.us-east-1.amazonaws.com/prod/{FILE_NAME}```
-
-Will return a presigned S3 url. This URL will be valid for 10 minutes and allows you to download the file, either via a browser or through a `GET` request.
-
-You may also want to get an image preview of the file. To do this, you can execute the following command:
-```curl -X GET https://{RANDOM_STRING}.execute-api.us-east-1.amazonaws.com/prod/{FILE_NAME}?preview=true```
-
-This will return a presigned S3 url for the image preview. This URL will be valid for 10 minutes and allows you to download the file, either via a browser or through a `GET` request.
-
-
-
+Welcome to PhotoSky! PhotoSky is a mini-project activiy developed by the UML Cloud Computing Club. The purpose of this project is to demonstrate the use of AWS services to create a serverless application. PhotoSky is a simple cross platform application that allows users to upload images to an S3 bucket and view them in a gallery. The application also allows users to download the images and view a preview of the images.
