@@ -18,20 +18,22 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Step 2: Log in to the GitHub Container Registry
+      # Step 2: Build the Docker image
+      - name: Build Docker image
+        run: |
+          docker build -t ghcr.io/umlcloudcomputing/photosky-devcontainer:latest -f .devcontainer/Dockerfile .
+
+      # Step 3: Log in to the GitHub Container Registry (only for pushes)
       - name: Log in to GitHub Container Registry
+        if: github.event_name == 'push'
         uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.DOCKER_PAT }}
 
-      # Step 3: Build the Docker image
-      - name: Build Docker image
-        run: |
-          docker build -t ghcr.io/umlcloudcomputing/photosky-devcontainer:latest -f .devcontainer/Dockerfile .
-
-      # Step 4: Push the Docker image to GitHub Container Registry
+      # Step 4: Push the Docker image to GitHub Container Registry (only for pushes)
       - name: Push Docker image
+        if: github.event_name == 'push'
         run: |
           docker push ghcr.io/umlcloudcomputing/photosky-devcontainer:latest
