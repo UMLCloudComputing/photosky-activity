@@ -1,4 +1,4 @@
-.PHONY: build push aws-login fix-android-sdk-permissions
+.PHONY: build push aws-login fix-android-sdk-permissions pip-install
 
 # Load environment variables from the .env file
 include .env
@@ -23,3 +23,8 @@ fix-android-sdk-permissions:
 	@echo "Fixing Android SDK permissions..."
 	@sudo chown ${USER} /dev/kvm
 	@sudo chown ${USER}:${USER} ${ANDROID_HOME} -R
+
+pip-install:
+	@echo "Installing Python dependencies..."
+	@pip3 install -r requirements.txt
+	@echo "Python dependencies installed."
