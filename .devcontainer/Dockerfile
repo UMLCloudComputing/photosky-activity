@@ -47,6 +47,9 @@ RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 # Switch back to non-root
 USER codespace
 
+# Install Node.js v22
+RUN . /usr/local/share/nvm/nvm.sh && nvm install v22
+
 # Install AWS CLI v2
 COPY --from=amazon/aws-cli:latest /usr/local/aws-cli/ /usr/local/aws-cli/
 RUN sudo ln -s /usr/local/aws-cli/v2/current/bin/aws /usr/local/bin/aws && \

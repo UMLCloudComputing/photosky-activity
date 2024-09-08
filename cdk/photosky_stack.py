@@ -1,6 +1,7 @@
 from aws_cdk import (
     Duration,
     Stack,
+    RemovalPolicy,
     aws_lambda as _lambda,
     aws_s3 as s3,
     aws_apigateway as apigateway,
@@ -37,7 +38,7 @@ class PhotoskyStack(Stack):
             }
         )
 
-        # Create an S3 bucket and grant permissions to the Lambda function
+        # Create an S3 bucket with auto deletion and grant permissions to the Lambda function
         bucket = s3.Bucket(
             self, 
             id=f"id{construct_id.lower()}", 
@@ -48,7 +49,9 @@ class PhotoskyStack(Stack):
                 allowed_headers=["*"],  # Allow all headers
                 exposed_headers=["ETag"],  # Optionally expose any headers you need (like ETag)
                 max_age=3000  # Cache the preflight request for 3000 seconds
-            )]
+            )],
+            removal_policy=RemovalPolicy.DESTROY,  # Automatically delete the bucket on destroy
+            auto_delete_objects=True  # Automatically delete objects in the bucket on destroy
         )
 
         # Grant the Lambda function read/write access to the S3 bucket
