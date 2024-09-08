@@ -26,7 +26,7 @@
         "AWS_DEFAULT_REGION": "${localEnv:AWS_DEFAULT_REGION}"
     },
     "postCreateCommand": "sudo adduser $USER kvm && (sudo test -e /dev/kvm && sudo chown $USER /dev/kvm || true) && sudo chown $USER:$USER $ANDROID_HOME -R",
-    "postStartCommand": "echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties",
+    "postStartCommand": "echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties && npm install -g aws-cdk",
     "hostRequirements": {
         "cpus": 4,
         "memory": "16gb",
