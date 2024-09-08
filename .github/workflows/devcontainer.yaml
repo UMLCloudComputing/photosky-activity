@@ -29,9 +29,9 @@ jobs:
       # Step 3: Build the Docker image
       - name: Build Docker image
         run: |
-          docker build -t ghcr.io/${{ github.repository }}/photosky-devcontainer:latest -f .devcontainer/Dockerfile .
+          docker build -t ghcr.io/umlcloudcomputing/photosky-devcontainer:latest -f .devcontainer/Dockerfile .
 
       # Step 4: Push the Docker image to GitHub Container Registry
       - name: Push Docker image
         run: |
-          docker push ghcr.io/${{ github.repository }}/photosky-devcontainer:latest
+          docker push ghcr.io/umlcloudcomputing/photosky-devcontainer:latest
