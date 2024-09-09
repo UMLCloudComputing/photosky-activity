@@ -1,20 +1,15 @@
 name: Build and Push Docker DevContainer Image to GitHub Container Registry
 
 on:
-  push:
-    branches:
-      - main
-    paths:
-      - '.devcontainer/**'  # Only trigger on changes to files in .devcontainer
-  pull_request:
-    branches:
-      - main
-    paths:
-      - '.devcontainer/**'  # Only trigger on changes to files in .devcontainer
+  workflow_run:
+    workflows: ["Run Build Check"]  # Name of the workflow to wait for
+    types:
+      - completed
 
 jobs:
   build-and-push:
     runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}  # Only run if the test workflow passed
 
     steps:
       # Step 1: Checkout the repository
