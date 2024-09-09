@@ -13,6 +13,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@fontsource/roboto": "^5.0.14",
+    "@ionic/pwa-elements": "^3.3.0",
     "@mui/icons-material": "^6.0.1",
     "@mui/material": "^6.0.1",
     "@testing-library/jest-dom": "^5.17.0",

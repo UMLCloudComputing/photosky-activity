@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useSnackbar, SnackbarProvider } from 'notistack';
+import { Camera, CameraResultType } from '@capacitor/camera';
 
 // MUI Components
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -26,9 +27,9 @@ import LinearProgress from '@mui/material/LinearProgress';
 import Box from '@mui/material/Box';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
+import Stack from '@mui/material/Stack';
 
 // MUI Icons
-// import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
 import UploadIcon from '@mui/icons-material/Upload';
 import DeleteIcon from '@mui/icons-material/Delete';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
@@ -47,8 +48,6 @@ function Album() {
     const [isDarkMode, setIsDarkMode] = useState(false);
     const [loading, setLoading] = useState(false);
     const [imageDialogOpen, setImageDialogOpen] = useState(false);
-    const [cameraOpen, setCameraOpen] = useState(false);
-    const [cameraStream, setCameraStream] = useState(null);
     const [menuAnchorEl, setMenuAnchorEl] = useState(null); // For MoreVertIcon menu
 
     const { enqueueSnackbar } = useSnackbar();
@@ -56,8 +55,6 @@ function Album() {
     const API_URL = process.env.REACT_APP_API_URL;
 
     const fileInputRef = useRef(null);
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
 
     const fetchImages = useCallback(async () => {
         setLoading(true);
@@ -191,36 +188,29 @@ function Album() {
         setImageDialogOpen(true);
     };
 
-    const handleOpenCamera = async () => {
+    // Capacitor Camera Integration
+    const takePicture = async () => {
         setImageDialogOpen(false);
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            setCameraStream(stream);
-            setCameraOpen(true);
+            const image = await Camera.getPhoto({
+                quality: 90,
+                allowEditing: true,
+                resultType: CameraResultType.Uri
+            });
+    
+            // Generate a random unique ID for the file name
+            const randomFileName = `captured-image-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.jpg`;
+    
+            const file = await fetch(image.webPath)
+                .then(res => res.blob())
+                .then(blob => new File([blob], randomFileName, { type: 'image/jpeg' }));
+            
+            await uploadImage(file);
         } catch (error) {
-            console.error('Error accessing camera:', error);
-            enqueueSnackbar('Error accessing camera', { variant: 'error' });
+            console.error('Error capturing image:', error);
+            enqueueSnackbar('Error capturing image', { variant: 'error' });
         }
-    };
-
-    const handleCloseCamera = () => {
-        if (cameraStream) {
-            cameraStream.getTracks().forEach(track => track.stop());
-        }
-        setCameraOpen(false);
-    };
-
-    const handleCapture = async () => {
-        const video = videoRef.current;
-        const canvas = canvasRef.current;
-        const context = canvas.getContext('2d');
-        context.drawImage(video, 0, 0, canvas.width, canvas.height);
-        canvas.toBlob(async (blob) => {
-            const file = new File([blob], 'captured-image.jpg', { type: 'image/jpeg' });
-            await uploadImage(file);  
-        });
-        handleCloseCamera();
-    };
+    };    
 
     const theme = createTheme({
         palette: {
@@ -344,36 +334,25 @@ function Album() {
             <Dialog open={imageDialogOpen} onClose={() => setImageDialogOpen(false)} fullWidth>
                 <DialogTitle>Select Image or Take Picture</DialogTitle>
                 <DialogActions>
-                    <Button onClick={handleAddImage} color="primary">
-                        Select Image
-                    </Button>
-                    <Button onClick={handleOpenCamera} color="primary">
-                        Take Picture
-                    </Button>
-                    <Button onClick={() => setImageDialogOpen(false)}>Cancel</Button>
-                </DialogActions>
-            </Dialog>
-
-            {/* Camera dialog for capturing image */}
-            <Dialog open={cameraOpen} onClose={handleCloseCamera} fullWidth>
-                <DialogTitle>Camera</DialogTitle>
-                <DialogContent>
-                    <video ref={videoRef} autoPlay style={{ width: '100%' }} />
-                    <canvas ref={canvasRef} style={{ display: 'none' }} />
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleCapture} color="primary">
-                        Capture
-                    </Button>
-                    <Button onClick={handleCloseCamera}>Close</Button>
+                    <Stack direction="column" spacing={2} width="100%">
+                        <Button onClick={handleAddImage} color="primary" width="100%">
+                            Select Image
+                        </Button>
+                        <Button onClick={takePicture} color="primary" width="100%">
+                            Take Picture
+                        </Button>
+                        <Button onClick={() => setImageDialogOpen(false)} color="error" width="100%">
+                            Cancel
+                        </Button>
+                    </Stack>
                 </DialogActions>
             </Dialog>
 
             <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={5}>
                 <BottomNavigation value={navValue} onChange={(event, newValue) => setNavValue(newValue)}>
-                    <BottomNavigationAction label="Refresh" icon={<RefreshIcon />} onClick={fetchImages} />
-                    <BottomNavigationAction label="Gallery" icon={<AppsIcon />} />
-                    <BottomNavigationAction label="Add Image" icon={<UploadIcon />} onClick={handleOpenCameraDialog} />
+                    <BottomNavigationAction showLabel label="Refresh" icon={<RefreshIcon />} onClick={fetchImages} />
+                    <BottomNavigationAction showLabel label="Gallery" icon={<AppsIcon />} />
+                    <BottomNavigationAction showLabel label="Add Image" icon={<UploadIcon />} onClick={handleOpenCameraDialog} />
                 </BottomNavigation>
             </Paper>
 
