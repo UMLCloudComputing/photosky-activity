@@ -1,13 +1,16 @@
-name: Build and Push Docker Image
+name: Build and Push Docker DevContainer Image to GitHub Container Registry
 
 on:
-  # Trigger on push or pull requests to the main branch
   push:
     branches:
       - main
+    paths:
+      - '.devcontainer/**'  # Only trigger on changes to files in .devcontainer
   pull_request:
     branches:
       - main
+    paths:
+      - '.devcontainer/**'  # Only trigger on changes to files in .devcontainer
 
 jobs:
   build-and-push:
@@ -23,7 +26,7 @@ jobs:
         run: |
           docker build -t ghcr.io/umlcloudcomputing/photosky-devcontainer:latest -f .devcontainer/Dockerfile .
 
-      # Step 3: Log in to the GitHub Container Registry (only for pushes)
+      # Step 3: Log in to GitHub Container Registry (only for pushes)
       - name: Log in to GitHub Container Registry
         if: github.event_name == 'push'
         uses: docker/login-action@v2

@@ -1,0 +1,28 @@
+name: Run Build Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test-build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Step 2: Pull the public Docker image
+      - name: Pull Docker image
+        run: |
+          docker pull ghcr.io/umlcloudcomputing/photosky-devcontainer:latest
+
+      # Step 3: Run Docker container and execute npm run build in the ./photosky folder
+      - name: Test npm run build in Docker container
+        run: |
+          docker run --rm -v ${{ github.workspace }}:/workspace -w /workspace/photosky ghcr.io/umlcloudcomputing/photosky-devcontainer:latest /bin/bash -c "npm install && npm run build"
