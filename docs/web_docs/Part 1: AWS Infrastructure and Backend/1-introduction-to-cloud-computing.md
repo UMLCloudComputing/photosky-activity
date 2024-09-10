@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+slug: /activities/part-1-aws-infrastructure-and-backend/1-introduction-to-cloud-computing
 ---
 
 # Introduction to Cloud Computing and AWS
