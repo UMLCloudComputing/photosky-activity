@@ -3,6 +3,7 @@
   "position": 2,
   "link": {
     "type": "generated-index",
-    "description": "Set up the AWS infrastructure and implement the backend for PhotoSky."
+    "description": "Set up the AWS infrastructure and implement the backend for PhotoSky.",
+    "slug": "part-1-aws-infrastructure-and-backend"
   }
 }
