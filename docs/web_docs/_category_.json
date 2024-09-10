@@ -1,0 +1,8 @@
+{
+  "label": "PhotoSky Tutorial",
+  "position": 1,
+  "link": {
+    "type": "generated-index",
+    "description": "Learn how to build a cloud-based image management application using AWS, React, and Capacitor."
+  }
+}
