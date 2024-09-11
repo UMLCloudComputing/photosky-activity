@@ -3,6 +3,7 @@
   "position": 3,
   "link": {
     "type": "generated-index",
-    "description": "Develop the React frontend and integrate it with the AWS backend."
+    "description": "Develop the React frontend and integrate it with the AWS backend.",
+    "slug": "part-2-frontend-development-and-integration"
   }
 }
