@@ -81,7 +81,7 @@ First, let's create the `S3.py` file, which will contain our S3 utility class:
                return preview_object_name
 
            except ClientError as e:
-               logging.error(e)
+               logging.error(f"Error creating preview image: {e}")
                return None
 
        def create_presigned_post(self, object_name, fields=None, conditions=None, expiration=3600):
@@ -95,7 +95,7 @@ First, let's create the `S3.py` file, which will contain our S3 utility class:
                )
                return response
            except ClientError as e:
-               logging.error(e)
+               logging.error(f"Error creating presigned POST URL: {e}")
                return None
 
        def create_presigned_get(self, object_name, expiration=3600):
@@ -107,7 +107,7 @@ First, let's create the `S3.py` file, which will contain our S3 utility class:
                )
                return response
            except ClientError as e:
-               logging.error(e)
+               logging.error(f"Error creating presigned GET URL: {e}")
                return None
 
        def list_images(self):
@@ -119,18 +119,19 @@ First, let's create the `S3.py` file, which will contain our S3 utility class:
                        images.append({'id': obj['Key'], 'url': self.create_presigned_get(obj['Key'])})
                return images
            except ClientError as e:
-               logging.error(e)
+               logging.error(f"Error listing images: {e}")
                return []
 
        def delete_image(self, object_name):
            try:
                self.client.delete_object(Bucket=self.bucket_name, Key=object_name)
+               return True
            except ClientError as e:
-               logging.error(e)
-               return None
+               logging.error(f"Error deleting image: {e}")
+               return False
    ```
 
-This `S3` class provides methods for interacting with our S3 bucket, including creating preview images, generating presigned URLs, listing images, and deleting images.
+This `S3` class provides methods for interacting with our S3 bucket, including creating preview images, generating presigned URLs, listing images, and deleting images. Note the enhanced error handling and logging throughout the class.
 
 ### Implementing main.py
 
@@ -143,7 +144,12 @@ Now, let's implement `main.py`, which will handle our API requests:
    ```python
    import json
    import os
+   import logging
    from S3 import S3
+
+   # Configure logging
+   logging.basicConfig(level=logging.INFO)
+   logger = logging.getLogger(__name__)
 
    def handler(event, context):
        s3 = S3(os.getenv("BUCKET_NAME"))
@@ -166,118 +172,136 @@ Now, let's implement `main.py`, which will handle our API requests:
                'body': json.dumps({'message': 'CORS preflight successful'})
            }
 
-       # Handle GET /list-images
-       if method == 'GET' and path == '/list-images':
-           images = s3.list_images()
-           return {
-               'statusCode': 200,
-               'headers': headers,
-               'body': json.dumps({'images': images})
-           }
-
-       # Handle POST /get-presigned-url
-       elif method == 'POST' and path == '/get-presigned-url':
-           body = json.loads(event['body'])
-           filename = body.get('filename')
-           filetype = body.get('filetype')
-
-           if not filename or not filetype:
-               return {
-                   'statusCode': 400,
-                   'headers': headers,
-                   'body': json.dumps({'message': 'Filename and filetype required'})
-               }
-
-           presigned_url = s3.create_presigned_post(filename, conditions=None)
-           if presigned_url:
+       try:
+           # Handle GET /list-images
+           if method == 'GET' and path == '/list-images':
+               images = s3.list_images()
                return {
                    'statusCode': 200,
                    'headers': headers,
-                   'body': json.dumps(presigned_url)
-               }
-           else:
-               return {
-                   'statusCode': 500,
-                   'headers': headers,
-                   'body': json.dumps({'message': 'Error generating presigned URL'})
+                   'body': json.dumps({'images': images})
                }
 
-       # Handle DELETE /delete-image/{filename}
-       elif method == 'DELETE' and path.startswith('/delete-image/'):
-           filename = path.split('/')[-1]
+           # Handle POST /get-presigned-url
+           elif method == 'POST' and path == '/get-presigned-url':
+               body = json.loads(event['body'])
+               filename = body.get('filename')
+               filetype = body.get('filetype')
 
-           if not s3.object_exists(filename):
-               return {
-                   'statusCode': 404,
-                   'headers': headers,
-                   'body': json.dumps({'message': 'File not found'})
-               }
+               if not filename or not filetype:
+                   return {
+                       'statusCode': 400,
+                       'headers': headers,
+                       'body': json.dumps({'message': 'Filename and filetype required'})
+                   }
 
-           s3.delete_image(filename)
-           return {
-               'statusCode': 200,
-               'headers': headers,
-               'body': json.dumps({'message': 'Image deleted successfully'})
-           }
-
-       # Handle GET /{filename} for downloading images and creating previews
-       elif method == 'GET':
-           query = event['queryStringParameters']
-           filename = path.lstrip('/')
-
-           if query and query.get('preview'):
-               if s3.object_exists(filename):
-                   if not s3.object_exists("preview_" + filename):
-                       print("Cache Miss")
-                       s3.create_preview_image(filename)
-                   filename = "preview_" + filename
+               presigned_url = s3.create_presigned_post(filename, conditions=None)
+               if presigned_url:
+                   return {
+                       'statusCode': 200,
+                       'headers': headers,
+                       'body': json.dumps(presigned_url)
+                   }
                else:
+                   raise Exception('Error generating presigned URL')
+
+           # Handle DELETE /delete-image/{filename}
+           elif method == 'DELETE' and path.startswith('/delete-image/'):
+               filename = path.split('/')[-1]
+
+               if not s3.object_exists(filename):
                    return {
                        'statusCode': 404,
                        'headers': headers,
                        'body': json.dumps({'message': 'File not found'})
                    }
 
-           presigned_url = s3.create_presigned_get(filename)
-           if presigned_url:
-               return {
-                   'statusCode': 200,
-                   'headers': headers,
-                   'body': json.dumps({'url': presigned_url})
-               }
+               if s3.delete_image(filename):
+                   return {
+                       'statusCode': 200,
+                       'headers': headers,
+                       'body': json.dumps({'message': 'Image deleted successfully'})
+                   }
+               else:
+                   raise Exception('Error deleting image')
+
+           # Handle GET /{filename} for downloading images and creating previews
+           elif method == 'GET':
+               query = event['queryStringParameters']
+               filename = path.lstrip('/')
+
+               if query and query.get('preview'):
+                   if s3.object_exists(filename):
+                       if not s3.object_exists("preview_" + filename):
+                           logger.info("Creating preview image")
+                           preview_filename = s3.create_preview_image(filename)
+                           if not preview_filename:
+                               raise Exception('Error creating preview image')
+                       filename = "preview_" + filename
+                   else:
+                       return {
+                           'statusCode': 404,
+                           'headers': headers,
+                           'body': json.dumps({'message': 'File not found'})
+                       }
+
+               presigned_url = s3.create_presigned_get(filename)
+               if presigned_url:
+                   return {
+                       'statusCode': 200,
+                       'headers': headers,
+                       'body': json.dumps({'url': presigned_url})
+                   }
+               else:
+                   raise Exception('Error generating presigned URL')
+
+           # Fallback for unsupported paths/methods
            else:
                return {
-                   'statusCode': 400,
+                   'statusCode': 404,
                    'headers': headers,
-                   'body': json.dumps({'message': 'Error generating presigned URL'})
+                   'body': json.dumps({'message': 'Not found'})
                }
 
-       # Fallback for unsupported paths/methods
-       return {
-           'statusCode': 404,
-           'headers': headers,
-           'body': json.dumps({'message': 'Not found'})
-       }
+       except Exception as e:
+           logger.error(f"Error processing request: {str(e)}")
+           return {
+               'statusCode': 500,
+               'headers': headers,
+               'body': json.dumps({'message': 'Internal server error'})
+           }
    ```
 
-This `handler` function processes incoming API requests, interacts with the S3 bucket using our `S3` class, and returns appropriate responses.
+This `handler` function processes incoming API requests, interacts with the S3 bucket using our `S3` class, and returns appropriate responses. Note the added error handling and logging throughout the function.
 
 ## Understanding the Lambda Function
 
 Let's break down the main components of our Lambda function:
 
-1. **CORS Handling**: We set up CORS headers to allow cross-origin requests, which is necessary for our frontend to communicate with the API.
+1. **Environment Variables**: We use `os.getenv("BUCKET_NAME")` to get the S3 bucket name from environment variables. This allows us to keep our configuration separate from our code and easily change it for different environments.
 
-2. **List Images**: The `/list-images` endpoint retrieves a list of all images in the S3 bucket.
+2. **CORS Handling**: We set up CORS headers to allow cross-origin requests, which is necessary for our frontend to communicate with the API.
 
-3. **Get Presigned URL**: The `/get-presigned-url` endpoint generates a presigned URL for uploading an image to S3.
+3. **Error Handling**: We've implemented a try-except block to catch and log any errors that occur during request processing. This helps with debugging and ensures we always return a valid response to the client.
 
-4. **Delete Image**: The `/delete-image/{filename}` endpoint deletes a specific image from the S3 bucket.
+4. **Logging**: We use Python's built-in `logging` module to log important events and errors. This is crucial for monitoring and debugging our Lambda function in production.
 
-5. **Get Image/Preview**: The `GET /{filename}` endpoint retrieves a presigned URL for downloading an image. If the `preview` query parameter is set, it creates and returns a preview image.
+5. **API Endpoints**:
+   - `GET /list-images`: Retrieves a list of all images in the S3 bucket.
+   - `POST /get-presigned-url`: Generates a presigned URL for uploading an image to S3.
+   - `DELETE /delete-image/{filename}`: Deletes a specific image from the S3 bucket.
+   - `GET /{filename}`: Retrieves a presigned URL for downloading an image. If the `preview` query parameter is set, it creates and returns a preview image.
+
+6. **S3 Interactions**: All S3 operations are encapsulated in the `S3` class, which provides methods for creating preview images, generating presigned URLs, listing images, and deleting images.
 
 ## Conclusion
 
-We've now implemented the Lambda function that will serve as the backend for our PhotoSky application. This function handles all the necessary operations for managing images in our S3 bucket and provides the API that our frontend will interact with.
+We've now implemented a robust Lambda function that will serve as the backend for our PhotoSky application. This function handles all the necessary operations for managing images in our S3 bucket and provides the API that our frontend will interact with.
+
+Key points to remember:
+- Always use environment variables for configuration that might change between environments.
+- Implement proper error handling and logging to make debugging easier.
+- Use CORS headers to allow your frontend to communicate with your API.
+- Encapsulate complex operations (like S3 interactions) in separate classes for better organization and reusability.
 
 In the next section, we'll deploy and test our backend to ensure everything is working correctly.

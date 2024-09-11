@@ -1,8 +1,0 @@
-{
-  "label": "Part 3: Mobile Development and Cloud Deployment",
-  "position": 4,
-  "link": {
-    "type": "generated-index",
-    "description": "Add mobile functionality with Capacitor and deploy the application to the cloud."
-  }
-}

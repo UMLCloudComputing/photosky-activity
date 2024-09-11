@@ -5,7 +5,7 @@ slug: /activities/part-2-frontend-development-and-integration/3-state-management
 
 # State Management in React
 
-In this section, we'll dive into state management for our PhotoSky application using React hooks. We'll cover how to manage local component state, share state between components, and handle side effects in our application.
+In this section, we'll dive deep into state management for our PhotoSky application using React hooks. We'll cover how to manage local component state, share state between components, handle side effects, implement error handling, and manage loading states in our application.
 
 ## Understanding State in React
 
@@ -18,164 +18,201 @@ React Hooks are functions that let you "hook into" React state and lifecycle fea
 1. `useState`: For managing local component state
 2. `useEffect`: For performing side effects in function components
 3. `useCallback`: For memoizing functions to optimize performance
-4. `useContext`: For sharing state across components without prop drilling (though we won't use this in our current implementation)
+4. `useRef`: For creating mutable references that persist across re-renders
 
 Let's see how we're using these hooks in our PhotoSky application.
 
-## Managing Images State
+## Managing Application State
 
-In our `App.js` component, we're using the `useState` hook to manage our images state:
+In our `Album` component (inside `App.js`), we're using several `useState` hooks to manage our application state:
 
 ```jsx
 const [images, setImages] = useState([]);
+const [selectedImage, setSelectedImage] = useState(null);
+const [dialogOpen, setDialogOpen] = useState(false);
+const [navValue, setNavValue] = useState(0);
+const [themeMode, setThemeMode] = useState('system');
+const [isDarkMode, setIsDarkMode] = useState(false);
+const [loading, setLoading] = useState(false);
+const [imageDialogOpen, setImageDialogOpen] = useState(false);
+const [menuAnchorEl, setMenuAnchorEl] = useState(null);
 ```
 
-This creates a state variable `images` and a function `setImages` to update it. We initialize it with an empty array.
+These state variables manage different aspects of our application:
 
-## Fetching Images
+- `images`: Stores the list of images fetched from the backend
+- `selectedImage`: Keeps track of the image selected for viewing or deletion
+- `dialogOpen`: Controls the visibility of the image viewer dialog
+- `navValue`: Manages the selected value in the bottom navigation
+- `themeMode`: Stores the current theme mode ('light', 'dark', or 'system')
+- `isDarkMode`: A boolean indicating whether dark mode is active
+- `loading`: Indicates whether a loading operation is in progress
+- `imageDialogOpen`: Controls the visibility of the image upload/capture dialog
+- `menuAnchorEl`: Stores the anchor element for the options menu
 
-We use the `useCallback` hook to memoize our `fetchImages` function, and the `useEffect` hook to call it when the component mounts:
+## Fetching Images and Error Handling
+
+We use the `useCallback` hook to memoize our `fetchImages` function, and the `useEffect` hook to call it when the component mounts. We also implement error handling and loading state management:
 
 ```jsx
 const fetchImages = useCallback(async () => {
+  setLoading(true);
   try {
-    const response = await axios.get(`${process.env.REACT_APP_API_URL}/list-images`);
+    const response = await axios.get(`${API_URL}/list-images`);
     setImages(response.data.images);
     enqueueSnackbar('Images loaded successfully', { variant: 'success' });
   } catch (error) {
     console.error('Error fetching images:', error);
     enqueueSnackbar('Error fetching images', { variant: 'error' });
+  } finally {
+    setLoading(false);
   }
-}, [enqueueSnackbar]);
+}, [API_URL, enqueueSnackbar]);
 
 useEffect(() => {
   fetchImages();
 }, [fetchImages]);
 ```
 
-The `useCallback` hook ensures that the `fetchImages` function is only recreated if `enqueueSnackbar` changes, which helps to optimize performance.
+Note the use of `setLoading(true)` at the start of the operation and `setLoading(false)` in the `finally` block. This ensures that the loading state is properly managed regardless of whether the operation succeeds or fails.
 
-The `useEffect` hook runs after every render, but because we pass `[fetchImages]` as the second argument, it only runs when `fetchImages` changes (which, due to `useCallback`, is only when `enqueueSnackbar` changes).
+## Managing Theme
 
-## Managing Theme State
-
-We're also using `useState` to manage our theme state:
+We use state to manage the theme and provide a function to toggle it:
 
 ```jsx
-const [themeMode, setThemeMode] = useState('light');
-```
-
-And we have a function to toggle the theme:
-
-```jsx
-const handleToggleTheme = () => {
-  setThemeMode(prevMode => prevMode === 'light' ? 'dark' : 'light');
+const handleToggleThemeMode = () => {
+  if (themeMode === 'system') {
+    setThemeMode('light');
+    setIsDarkMode(false);
+  } else if (themeMode === 'light') {
+    setThemeMode('dark');
+    setIsDarkMode(true);
+  } else {
+    setThemeMode('system');
+    checkDarkMode();
+  }
 };
+
+const checkDarkMode = useCallback(() => {
+  const systemDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+  if (themeMode === 'system') {
+    setIsDarkMode(systemDarkMode);
+  }
+}, [themeMode]);
+
+useEffect(() => {
+  checkDarkMode();
+}, [themeMode, checkDarkMode]);
 ```
 
-This function uses the functional update form of `setThemeMode`, which is recommended when the new state depends on the previous state.
+## Handling Image Upload and Camera Integration
 
-## Implementing Image Upload
-
-Let's implement the image upload functionality. We'll add a new state for the file being uploaded:
+We use `useRef` to create a reference to the file input element, and `useCallback` to memoize our upload functions:
 
 ```jsx
-const [uploadingFile, setUploadingFile] = useState(null);
-```
+const fileInputRef = useRef(null);
 
-And here's how we can implement the upload function:
-
-```jsx
-const handleUpload = useCallback(async () => {
-  if (!uploadingFile) return;
-
+const uploadImage = useCallback(async (file) => {
+  setLoading(true);
   try {
-    // Get a presigned URL for the upload
-    const presignedResponse = await axios.post(`${process.env.REACT_APP_API_URL}/get-presigned-url`, {
-      filename: uploadingFile.name,
-      filetype: uploadingFile.type
+    const presignedResponse = await axios.post(`${API_URL}/get-presigned-url`, {
+      filename: file.name,
+      filetype: file.type
     });
 
     const { url, fields } = presignedResponse.data;
-
-    // Prepare the form data for upload
     const formData = new FormData();
     Object.entries(fields).forEach(([key, value]) => formData.append(key, value));
-    formData.append('file', uploadingFile);
+    formData.append('file', file);
 
-    // Upload the file
-    await axios.post(url, formData, {
-      headers: { 'Content-Type': 'multipart/form-data' }
-    });
+    await axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
+    fetchImages();
     enqueueSnackbar('Image uploaded successfully', { variant: 'success' });
-    setUploadingFile(null);
-    fetchImages(); // Refresh the image list
   } catch (error) {
     console.error('Error uploading image:', error);
     enqueueSnackbar('Error uploading image', { variant: 'error' });
+  } finally {
+    setLoading(false);
   }
-}, [uploadingFile, enqueueSnackbar, fetchImages]);
-```
+}, [API_URL, enqueueSnackbar, fetchImages]);
 
-This function uses the `uploadingFile` state to get the file to upload, sends a request to get a presigned URL, then uses that URL to upload the file to S3.
-
-## Implementing Image Deletion
-
-For image deletion, we'll add a new function:
-
-```jsx
-const handleDeleteImage = useCallback(async (imageId) => {
+const takePicture = useCallback(async () => {
+  setImageDialogOpen(false);
   try {
-    await axios.delete(`${process.env.REACT_APP_API_URL}/delete-image/${imageId}`);
-    enqueueSnackbar('Image deleted successfully', { variant: 'success' });
-    fetchImages(); // Refresh the image list
+    const image = await Camera.getPhoto({
+      quality: 90,
+      allowEditing: true,
+      resultType: CameraResultType.Uri
+    });
+
+    const randomFileName = `captured-image-${Date.now()}-${Math.random().toString(36).substring(2, 15)}.jpg`;
+
+    const file = await fetch(image.webPath)
+      .then(res => res.blob())
+      .then(blob => new File([blob], randomFileName, { type: 'image/jpeg' }));
+    
+    await uploadImage(file);
   } catch (error) {
-    console.error('Error deleting image:', error);
-    enqueueSnackbar('Error deleting image', { variant: 'error' });
+    console.error('Error capturing image:', error);
+    enqueueSnackbar('Error capturing image', { variant: 'error' });
   }
-}, [enqueueSnackbar, fetchImages]);
+}, [uploadImage, enqueueSnackbar]);
 ```
 
-This function takes an `imageId`, sends a delete request to our API, and then refreshes the image list.
+## Environment Variables
 
-## Passing State and Functions to Child Components
-
-We can now pass our state and functions to child components:
+Our application uses environment variables to manage configuration. In React, environment variables are prefixed with `REACT_APP_`. We access our API URL like this:
 
 ```jsx
-return (
-  <ThemeProvider theme={theme}>
-    {/* ... other components ... */}
-    <ImageGallery 
-      images={images} 
-      onDeleteImage={handleDeleteImage}
-    />
-    <BottomNav 
-      onRefresh={fetchImages} 
-      onUpload={() => document.getElementById('fileInput').click()} 
-    />
-    <input
-      type="file"
-      id="fileInput"
-      style={{ display: 'none' }}
-      onChange={(e) => {
-        setUploadingFile(e.target.files[0]);
-        handleUpload();
-      }}
-    />
-  </ThemeProvider>
-);
+const API_URL = process.env.REACT_APP_API_URL;
+```
+
+Make sure to set up your `.env` file in the root of your project with the necessary variables:
+
+```
+REACT_APP_API_URL=https://your-api-gateway-url.amazonaws.com/prod
+```
+
+## Error Handling and Notifications
+
+We use the `notistack` library for displaying notifications to the user. The `enqueueSnackbar` function is used throughout the application to show success and error messages:
+
+```jsx
+import { useSnackbar } from 'notistack';
+
+function Album() {
+  const { enqueueSnackbar } = useSnackbar();
+
+  // ... other code ...
+
+  enqueueSnackbar('Success message', { variant: 'success' });
+  enqueueSnackbar('Error message', { variant: 'error' });
+
+  // ... other code ...
+}
+```
+
+## Loading State
+
+We use a `loading` state variable to track when API calls are in progress. This is used to display a loading indicator:
+
+```jsx
+{loading && <LinearProgress />}
 ```
 
 ## Conclusion
 
-We've implemented state management in our PhotoSky application using React hooks. We're using:
+We've implemented comprehensive state management in our PhotoSky application using React hooks. We're using:
 
-- `useState` for managing local state (images, theme, uploading file)
-- `useEffect` for side effects (fetching images on component mount)
-- `useCallback` for memoizing functions (fetch images, upload, delete)
+- `useState` for managing local state (images, theme, dialogs, etc.)
+- `useEffect` for side effects (fetching images, checking dark mode)
+- `useCallback` for memoizing functions (fetch images, upload, take picture)
+- `useRef` for creating a reference to the file input element
 
-This approach allows us to manage our application's state efficiently, ensuring that our UI stays in sync with our data and that we're not unnecessarily re-rendering components.
+We've also implemented error handling, loading states, and a notification system to provide a smooth user experience. By using environment variables, we've made our application configurable and easier to deploy to different environments.
+
+This approach allows us to manage our application's state efficiently, ensuring that our UI stays in sync with our data and that we're not unnecessarily re-rendering components or recreating functions. It also provides a robust way to handle asynchronous operations and keep the user informed about the application's status.
 
 In the next section, we'll focus on integrating our frontend with the backend API, implementing the full functionality of our PhotoSky application.

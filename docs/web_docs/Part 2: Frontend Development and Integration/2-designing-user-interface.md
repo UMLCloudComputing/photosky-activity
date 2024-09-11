@@ -5,27 +5,52 @@ slug: /activities/part-2-frontend-development-and-integration/2-designing-user-i
 
 # Designing the User Interface
 
-In this section, we'll design and implement the user interface for our PhotoSky application. We'll create a responsive layout using Material-UI components and implement the main features of our app: displaying images, uploading new images, and managing the image gallery.
+In this section, we'll design and implement the user interface for our PhotoSky application. We'll create a responsive layout using Material-UI components and implement the main features of our app: displaying images, uploading new images, and managing the image gallery. We'll also integrate a notification system using the notistack library.
 
 ## Overview of the PhotoSky UI
 
 Our PhotoSky application will have the following main components:
 
-1. AppBar with the application title and theme toggle
+1. AppBar with the application logo, title, theme toggle, and options menu
 2. Image Gallery to display uploaded images
-3. Upload button to add new images
-4. Bottom Navigation for additional actions
+3. Bottom Navigation for key actions
+4. Dialogs for image upload, camera capture, and image viewing
+5. Notification system for user feedback
 
 Let's implement these components step by step.
 
+## Setting Up Dependencies
+
+First, ensure you have all the necessary dependencies installed. Your `package.json` should include:
+
+```json
+"dependencies": {
+  "@emotion/react": "^11.13.3",
+  "@emotion/styled": "^11.13.0",
+  "@mui/icons-material": "^6.0.1",
+  "@mui/material": "^6.0.1",
+  "notistack": "^3.0.1",
+  // ... other dependencies
+}
+```
+
+If any of these are missing, install them using npm:
+
+```bash
+npm install @emotion/react @emotion/styled @mui/material @mui/icons-material notistack
+```
+
 ## Implementing the Main App Component
 
-First, let's update our `App.js` file to create the basic structure of our application:
+Let's update our `App.js` file to create the basic structure of our application:
 
 ```jsx
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
-import { useSnackbar } from 'notistack';
+import { useSnackbar, SnackbarProvider } from 'notistack';
+import { Camera, CameraResultType } from '@capacitor/camera';
+
+// Import necessary Material-UI components and icons
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
 import AppBar from '@mui/material/AppBar';
@@ -34,205 +59,222 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import IconButton from '@mui/material/IconButton';
 import Box from '@mui/material/Box';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import LightModeIcon from '@mui/icons-material/LightMode';
+import SettingsBrightnessIcon from '@mui/icons-material/SettingsBrightness';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
 
-function App() {
-  const [images, setImages] = useState([]);
-  const [themeMode, setThemeMode] = useState('light');
-  const { enqueueSnackbar } = useSnackbar();
-
+function Album() {
+  // State variables will be defined here
+  
+  // Theme setup
   const theme = createTheme({
     palette: {
-      mode: themeMode,
+      mode: themeMode === 'system' ? (isDarkMode ? 'dark' : 'light') : themeMode,
     },
   });
-
-  const fetchImages = useCallback(async () => {
-    try {
-      const response = await axios.get(`${process.env.REACT_APP_API_URL}/list-images`);
-      setImages(response.data.images);
-      enqueueSnackbar('Images loaded successfully', { variant: 'success' });
-    } catch (error) {
-      console.error('Error fetching images:', error);
-      enqueueSnackbar('Error fetching images', { variant: 'error' });
-    }
-  }, [enqueueSnackbar]);
-
-  useEffect(() => {
-    fetchImages();
-  }, [fetchImages]);
-
-  const handleToggleTheme = () => {
-    setThemeMode(prevMode => prevMode === 'light' ? 'dark' : 'light');
-  };
 
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <AppBar position="relative">
-        <Toolbar>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
-            PhotoSky
-          </Typography>
-          <IconButton color="inherit" onClick={handleToggleTheme}>
-            {themeMode === 'dark' ? <LightModeIcon /> : <DarkModeIcon />}
-          </IconButton>
-        </Toolbar>
-      </AppBar>
+      {/* AppBar component will go here */}
       <main>
-        <Container sx={{ py: 8 }} maxWidth="md">
-          {/* We'll add our ImageGallery component here */}
-        </Container>
+        {/* Main content will go here */}
       </main>
-      {/* We'll add our BottomNavigation component here */}
+      {/* Bottom Navigation will go here */}
     </ThemeProvider>
   );
 }
 
-export default App;
-```
-
-This sets up our basic app structure with an AppBar, theme toggling, and a container for our main content.
-
-## Creating the ImageGallery Component
-
-Now, let's create a new file called `ImageGallery.js` in the `src` folder:
-
-```jsx
-import React from 'react';
-import ImageList from '@mui/material/ImageList';
-import ImageListItem from '@mui/material/ImageListItem';
-import Box from '@mui/material/Box';
-
-function ImageGallery({ images }) {
+export default function App() {
   return (
-    images.length > 0 ? (
-      <ImageList sx={{ width: '100%', height: 'auto' }} cols={3} rowHeight={164}>
-        {images.map((image) => (
-          <ImageListItem key={image.id}>
-            <img
-              src={image.url}
-              alt={`${image.id}`}
-              loading="lazy"
-              style={{ cursor: 'pointer', width: '100%', height: 'auto' }}
-            />
-          </ImageListItem>
-        ))}
-      </ImageList>
-    ) : (
-      <Box
-        sx={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          height: '200px',
-          backgroundColor: 'lightgrey',
-          borderRadius: '8px',
-          color: 'grey',
-        }}
-      >
-        No images found, upload images to see them here.
-      </Box>
-    )
+    <SnackbarProvider maxSnack={3} autoHideDuration={4000} anchorOrigin={{ vertical: 'top', horizontal: 'left' }}>
+      <Album />
+    </SnackbarProvider>
   );
 }
-
-export default ImageGallery;
 ```
 
-Now, let's add this component to our `App.js`:
+This sets up our basic app structure with Material-UI's `ThemeProvider` and `SnackbarProvider` for notifications.
+
+## Implementing the AppBar
+
+Now, let's create the AppBar with the logo, title, theme toggle, and options menu:
 
 ```jsx
-import ImageGallery from './ImageGallery';
+<AppBar position="relative">
+  <Toolbar>
+    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+      <img src="/PhotoSky.png" alt="PhotoSky Logo" style={{ width: 40, height: 40, marginRight: '16px' }} />
+    </Box>
+    <Typography variant="h6" color="inherit" noWrap>
+      PhotoSky
+    </Typography>
+    <Tooltip title="Toggle Theme Mode">
+      <IconButton edge="end" color="inherit" onClick={handleToggleThemeMode} sx={{ marginLeft: 'auto', mr: 1 }}>
+        {themeMode === 'dark' ? <DarkModeIcon /> : themeMode === 'light' ? <LightModeIcon /> : <SettingsBrightnessIcon />}
+      </IconButton>
+    </Tooltip>
+    <IconButton color="inherit" onClick={handleMenuOpen}>
+      <MoreVertIcon />
+    </IconButton>
+    <Menu
+      anchorEl={menuAnchorEl}
+      open={Boolean(menuAnchorEl)}
+      onClose={handleMenuClose}
+    >
+      <MenuItem onClick={() => { handleDeleteAllImages(); handleMenuClose(); }}>
+        Delete All Images
+      </MenuItem>
+      <MenuItem onClick={() => { handleMenuClose(); setThemeMode('light'); setIsDarkMode(false); }}>
+        Switch to Light Theme
+      </MenuItem>
+      <MenuItem onClick={() => { handleMenuClose(); setThemeMode('dark'); setIsDarkMode(true); }}>
+        Switch to Dark Theme
+      </MenuItem>
+      <MenuItem onClick={() => { handleMenuClose(); setThemeMode('system'); }}>
+        Switch to System Theme
+      </MenuItem>
+    </Menu>
+  </Toolbar>
+</AppBar>
+```
 
-// ... (previous code)
+## Creating the Image Gallery
 
+Now, let's implement the Image Gallery component:
+
+```jsx
 <Container sx={{ py: 8 }} maxWidth="md">
-  <ImageGallery images={images} />
+  {loading && <LinearProgress />}
+  {images.length > 0 ? (
+    <ImageList sx={{ width: '100%', height: 'auto' }} cols={3} rowHeight={164}>
+      {images.map((image) => (
+        <ImageListItem key={image.id} onClick={() => handleOpenDialog(image)}>
+          <img
+            src={image.url}
+            alt={`${image.id}`}
+            loading="lazy"
+            style={{ cursor: 'pointer', width: '100%', height: 'auto' }}
+          />
+        </ImageListItem>
+      ))}
+    </ImageList>
+  ) : (
+    <Box
+      sx={{
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: 'lightgrey',
+        height: '200px',
+        borderRadius: '8px',
+        color: 'grey',
+      }}
+    >
+      No images found, upload images to see them here.
+    </Box>
+  )}
 </Container>
 ```
 
 ## Implementing the Bottom Navigation
 
-Let's create a new file called `BottomNav.js` in the `src` folder:
+Add the Bottom Navigation component:
 
 ```jsx
-import React from 'react';
-import Paper from '@mui/material/Paper';
-import BottomNavigation from '@mui/material/BottomNavigation';
-import BottomNavigationAction from '@mui/material/BottomNavigationAction';
-import RefreshIcon from '@mui/icons-material/Refresh';
-import UploadIcon from '@mui/icons-material/Upload';
-
-function BottomNav({ onRefresh, onUpload }) {
-  return (
-    <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={3}>
-      <BottomNavigation showLabels>
-        <BottomNavigationAction label="Refresh" icon={<RefreshIcon />} onClick={onRefresh} />
-        <BottomNavigationAction label="Upload" icon={<UploadIcon />} onClick={onUpload} />
-      </BottomNavigation>
-    </Paper>
-  );
-}
-
-export default BottomNav;
+<Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={5}>
+  <BottomNavigation value={navValue} onChange={(event, newValue) => setNavValue(newValue)}>
+    <BottomNavigationAction showLabel label="Refresh" icon={<RefreshIcon />} onClick={fetchImages} />
+    <BottomNavigationAction showLabel label="Gallery" icon={<AppsIcon />} />
+    <BottomNavigationAction showLabel label="Add Image" icon={<UploadIcon />} onClick={handleOpenCameraDialog} />
+  </BottomNavigation>
+</Paper>
 ```
 
-Now, let's add this component to our `App.js` and implement the refresh and upload functions:
+## Adding Dialogs for Image Actions
+
+Let's add dialogs for image viewing, deletion, and upload:
 
 ```jsx
-import BottomNav from './BottomNav';
+{/* Image Viewer Dialog */}
+<Dialog open={dialogOpen} onClose={handleCloseDialog} fullWidth>
+  <DialogTitle>Image Viewer</DialogTitle>
+  <DialogContent>
+    {selectedImage && (
+      <img src={selectedImage.url} alt="Selected" style={{ width: '100%' }} />
+    )}
+    <DialogContentText>Do you want to delete this image?</DialogContentText>
+  </DialogContent>
+  <DialogActions>
+    <Button onClick={() => handleDeleteImage(selectedImage.id)} color="error">
+      <DeleteIcon /> Delete
+    </Button>
+    <Button onClick={handleCloseDialog}>Close</Button>
+  </DialogActions>
+</Dialog>
 
-// ... (previous code)
+{/* Image Upload Dialog */}
+<Dialog open={imageDialogOpen} onClose={() => setImageDialogOpen(false)} fullWidth>
+  <DialogTitle>Select Image or Take Picture</DialogTitle>
+  <DialogActions>
+    <Stack direction="column" spacing={2} width="100%">
+      <Button onClick={handleAddImage} color="primary" width="100%">
+        Select Image
+      </Button>
+      <Button onClick={takePicture} color="primary" width="100%">
+        Take Picture
+      </Button>
+      <Button onClick={() => setImageDialogOpen(false)} color="error" width="100%">
+        Cancel
+      </Button>
+    </Stack>
+  </DialogActions>
+</Dialog>
+```
 
-const handleUpload = async () => {
-  // We'll implement this in the next section
-  console.log('Upload button clicked');
+## Implementing the Notification System
+
+We're using the `notistack` library for our notification system. It's already set up in our main `App` component with `SnackbarProvider`. To use it in our `Album` component, we use the `useSnackbar` hook:
+
+```jsx
+const { enqueueSnackbar } = useSnackbar();
+
+// Example usage in a function:
+const handleSomeAction = () => {
+  try {
+    // Perform some action
+    enqueueSnackbar('Action performed successfully', { variant: 'success' });
+  } catch (error) {
+    enqueueSnackbar('Error performing action', { variant: 'error' });
+  }
 };
-
-return (
-  <ThemeProvider theme={theme}>
-    {/* ... (previous code) */}
-    <BottomNav onRefresh={fetchImages} onUpload={handleUpload} />
-  </ThemeProvider>
-);
 ```
 
-## Styling and Responsiveness
+This allows us to show notifications for various actions throughout our application, providing feedback to the user.
 
-Material-UI components are responsive by default, but we can further improve our layout:
+## Handling Loading States
 
-1. Use the `useMediaQuery` hook to adjust the layout for different screen sizes.
-2. Use Material-UI's `sx` prop for custom styling.
-
-Here's an example of how we can make our `ImageGallery` more responsive:
+To handle loading states, we've added a `LinearProgress` component that appears when the `loading` state is true:
 
 ```jsx
-import { useMediaQuery } from '@mui/material';
-import { useTheme } from '@mui/material/styles';
-
-function ImageGallery({ images }) {
-  const theme = useTheme();
-  const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
-
-  return (
-    <ImageList sx={{ width: '100%', height: 'auto' }} cols={isSmallScreen ? 2 : 3} rowHeight={164}>
-      {/* ... */}
-    </ImageList>
-  );
-}
+{loading && <LinearProgress />}
 ```
 
-This will display 2 columns on small screens and 3 columns on larger screens.
+Place this line at the top of your main content area to show a loading bar when operations are in progress.
 
 ## Conclusion
 
 We've now designed and implemented the basic user interface for our PhotoSky application. We have:
 
 1. Created a responsive layout using Material-UI components
-2. Implemented theme switching functionality
+2. Implemented an AppBar with logo, title, theme toggle, and options menu
 3. Created an image gallery to display uploaded images
 4. Added a bottom navigation bar for key actions
+5. Implemented dialogs for image viewing, deletion, and upload
+6. Set up a notification system for user feedback
+7. Added loading indicators for better user experience
 
-In the next section, we'll implement state management and add functionality to our UI components, including image upload and deletion.
+This UI provides a solid foundation for our application, offering a clean and intuitive interface for users to interact with their images. In the next section, we'll dive into state management to make our UI interactive and functional.

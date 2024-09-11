@@ -5,7 +5,7 @@ slug: /activities/part-1-aws-infrastructure-and-backend/2-setting-up-aws-environ
 
 # Setting Up Your AWS Environment
 
-In this section, we'll prepare your development environment and set up your AWS account to start building the PhotoSky application. We'll cover two methods: using GitHub Codespaces (recommended) and manual setup.
+In this section, we'll prepare your development environment and set up your AWS account to start building the PhotoSky application. We'll cover three methods: using GitHub Codespaces (recommended), using DevContainer locally, and manual setup. We'll also go through the process of setting up environment variables crucial for the project.
 
 ## Method 1: Using GitHub Codespaces (Recommended)
 
@@ -33,43 +33,82 @@ GitHub Codespaces provides a complete, configurable development environment in t
      ```
    - You should see version numbers for each tool, confirming they're installed correctly.
 
-4. **Configure AWS Credentials**:
-   - In the Codespace terminal, run:
-     ```bash
-     aws configure
-     ```
-   - Enter your AWS Access Key ID, Secret Access Key, and default region (e.g., us-east-1).
+## Method 2: Using DevContainer Locally
 
-That's it! Your development environment is now set up and ready to go.
+If you prefer to work on your local machine while still benefiting from a consistent development environment, you can use DevContainer with Visual Studio Code.
 
-## Method 2: Manual Setup
+### Prerequisites:
 
-If you prefer to work on your local machine or can't use GitHub Codespaces, ensure you have the following installed on your machine:
-- Git
-- Node.js (v22 or later)
-- npm (usually comes with Node.js)
-- AWS CLI
-- AWS CDK
+- Install [Docker](https://www.docker.com/products/docker-desktop)
+- Install [Visual Studio Code](https://code.visualstudio.com/)
+- Install the [Remote - Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension for VS Code
 
-**Verify Installation**:
-Run the following commands to ensure everything is installed correctly:
-```bash
-node --version
-npm --version
-aws --version
-cdk --version
-```
+### Steps:
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/UMLCloudComputing/photosky.git
+   cd photosky
+   ```
+
+2. **Open in VS Code**:
+   ```bash
+   code .
+   ```
+
+3. **Start DevContainer**:
+   - VS Code will detect the DevContainer configuration and prompt you to reopen the project in a container.
+   - Click "Reopen in Container" when prompted, or use the command palette (F1) and select "Remote-Containers: Reopen in Container".
+
+4. **Wait for Container Build**:
+   - The first time you open the project, it may take several minutes to build the container.
+   - Once complete, you'll have a fully configured development environment.
+
+5. **Verify the Environment**:
+   - Open a new terminal in VS Code.
+   - Run the verification commands as in Method 1.
+
+## Method 3: Manual Setup
+
+If you prefer to set up your environment manually or can't use the above methods, follow these steps:
+
+1. **Install Required Tools**:
+   - Install Git: [https://git-scm.com/downloads](https://git-scm.com/downloads)
+   - Install Node.js (v22 or later): [https://nodejs.org/](https://nodejs.org/)
+   - Install AWS CLI: [https://aws.amazon.com/cli/](https://aws.amazon.com/cli/)
+   - Install AWS CDK: Run `npm install -g aws-cdk` in your terminal
+
+2. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/UMLCloudComputing/photosky.git
+   cd photosky
+   ```
+
+3. **Verify Installation**:
+   Run the following commands to ensure everything is installed correctly:
+   ```bash
+   node --version
+   npm --version
+   aws --version
+   cdk --version
+   ```
 
 ## Setting Up Your AWS Account
 
 After setting up your development environment, you need to configure your AWS credentials and project settings:
 
-1. **Create a .env file**:
-   - In the root directory of the project, you'll find a `.env.example` file. Make a copy of this file and name it `.env`.
-   - Open the `.env` file in your text editor.
+1. **Create an AWS Account**:
+   - If you don't have an AWS account, create one at [https://aws.amazon.com/](https://aws.amazon.com/)
 
-2. **Fill in your AWS credentials and APP_NAME**:
-   - Replace the placeholders in your `.env` file with your actual AWS credentials and a custom APP_NAME:
+2. **Create an IAM User**:
+   - In the AWS Console, go to IAM (Identity and Access Management)
+   - Create a new user with programmatic access
+   - Attach the "AdministratorAccess" policy to this user (Note: In a production environment, you'd want to limit these permissions)
+   - Save the Access Key ID and Secret Access Key
+
+3. **Set Up Environment Variables**:
+   - In the root directory of the project, create a file named `.env`
+   - Add the following content to the `.env` file:
 
      ```
      AWS_ACCESS_KEY_ID=<YOUR_AWS_ACCESS_KEY_ID>
@@ -79,29 +118,43 @@ After setting up your development environment, you need to configure your AWS cr
      REACT_APP_API_URL=
      ```
 
-   - For `APP_NAME`, choose a unique name to prevent collisions with other students' projects. For example, you could use your initials followed by "photosky" (e.g., "jd-photosky").
-   - Leave `REACT_APP_API_URL` empty for now. We'll fill this in later.
+   - Replace `<YOUR_AWS_ACCESS_KEY_ID>` and `<YOUR_AWS_SECRET_ACCESS_KEY>` with the credentials from step 2
+   - For `APP_NAME`, choose a unique name to prevent collisions with other students' projects. For example, you could use your initials followed by "photosky" (e.g., "jd-photosky")
+   - Leave `REACT_APP_API_URL` empty for now. We'll fill this in later after deploying the backend
 
-3. **Configure AWS CLI**:
-   - In your terminal, run the following command:
+4. **Configure AWS CLI**:
+   - In your terminal, run:
      ```
      make aws-login
      ```
-   - This command uses the credentials from your `.env` file to configure the AWS CLI.
+   - This command uses the credentials from your `.env` file to configure the AWS CLI
 
-4. **Verify AWS Configuration**:
-   - To ensure your AWS credentials are correctly set up, run:
+5. **Verify AWS Configuration**:
+   - Run the following command:
      ```
      aws configure list
      ```
-   - If configured correctly, this command will return your AWS account ID and IAM user information.
+   - If configured correctly, this command will display your AWS account information
 
-Remember, always be cautious with your AWS credentials and never share them publicly. The `.env` file is included in `.gitignore` to prevent accidental commits of your sensitive information. If you accidentally expose your credentials, immediately deactivate them in the AWS Console and create new ones.
+## Environment Variables Explanation
+
+- `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`: These are your AWS credentials used to authenticate your requests to AWS services
+- `AWS_DEFAULT_REGION`: Specifies the AWS region where your resources will be created (e.g., us-east-1)
+- `APP_NAME`: A unique identifier for your application, used to name AWS resources
+- `REACT_APP_API_URL`: Will store the URL of your API Gateway after backend deployment
+
+## Important Notes
+
+- Never commit your `.env` file to version control. It's already included in `.gitignore` to prevent accidental commits
+- If you accidentally expose your AWS credentials, immediately deactivate them in the AWS Console and create new ones
+- The `make aws-login` command in the Makefile is a convenient way to set up AWS CLI with your credentials, but make sure you understand what it does before running it
 
 ## Conclusion
 
-You now have your development environment set up and your AWS account ready for the PhotoSky project. In the next section, we'll start designing our backend architecture and discuss the AWS services we'll be using in more detail.
+You now have your development environment set up and your AWS account configured for the PhotoSky project. Whether you chose to use GitHub Codespaces, DevContainer locally, or a manual setup, you're ready to start developing.
 
-Remember, always be cautious with your AWS credentials and never share them publicly. If you accidentally expose your credentials, immediately deactivate them in the AWS Console and create new ones.
+In the next section, we'll start designing our backend architecture and discuss the AWS services we'll be using in more detail.
+
+Remember to keep your AWS credentials secure and never share them publicly. If you encounter any issues during setup, refer to the project's troubleshooting guide or seek help from the course instructors.
 
 Happy coding!
