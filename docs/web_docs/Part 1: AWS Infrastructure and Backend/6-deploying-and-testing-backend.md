@@ -1,5 +1,6 @@
 ---
 sidebar_position: 6
+slug: /activities/part-1-aws-infrastructure-and-backend/6-deploying-and-testing-backend
 ---
 
 # Deploying and Testing the Backend

@@ -1,5 +1,6 @@
 ---
 sidebar_position: 5
+slug: /activities/part-1-aws-infrastructure-and-backend/5-creating-lambda-function
 ---
 
 # Creating the Lambda Function

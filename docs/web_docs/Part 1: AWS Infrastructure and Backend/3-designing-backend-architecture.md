@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+slug: /activities/part-1-aws-infrastructure-and-backend/3-designing-backend-architecture
 ---
 
 # Designing Backend Architecture

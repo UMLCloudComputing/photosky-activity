@@ -1,5 +1,6 @@
 ---
 sidebar_position: 4
+slug: /activities/part-1-aws-infrastructure-and-backend/4-implementing-aws-cdk-stack
 ---
 
 # Implementing AWS CDK Stack

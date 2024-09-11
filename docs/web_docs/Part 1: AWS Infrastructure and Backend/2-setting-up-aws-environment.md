@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+slug: /activities/part-1-aws-infrastructure-and-backend/2-setting-up-aws-environment
 ---
 
 # Setting Up Your AWS Environment
