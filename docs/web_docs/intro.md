@@ -27,10 +27,7 @@ By following this tutorial, you'll gain hands-on experience with:
 
 Before we dive into the tutorial, let's take a look at what we'll be building:
 
-<video width="100%" controls>
-  <source src="https://github.com/UMLCloudComputing/photosky/blob/main/PhotoSky_Demo.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+https://github.com/user-attachments/assets/70bdff9a-9bc3-4ebc-be27-02842196eef7
 
 As you can see, PhotoSky provides a seamless experience for managing images in the cloud, with a clean and intuitive interface.
 

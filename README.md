@@ -19,12 +19,8 @@ Welcome to PhotoSky! PhotoSky is a mini-project activity developed by the UML Cl
 
 Check out our demo video to see PhotoSky in action:
 
-<div align="center">
-  <video width="640" height="360" controls>
-    <source src="https://github.com/UMLCloudComputing/photosky/blob/main/PhotoSky_Demo.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-</div>
+https://github.com/user-attachments/assets/70bdff9a-9bc3-4ebc-be27-02842196eef7
+
 
 ## 🚀 Features
 
