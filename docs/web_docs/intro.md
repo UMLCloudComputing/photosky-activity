@@ -28,7 +28,7 @@ By following this tutorial, you'll gain hands-on experience with:
 Before we dive into the tutorial, let's take a look at what we'll be building:
 
 <video width="100%" controls>
-  <source src="https://github.com/UMLCloudComputing/photosky/raw/main/PhotoSky_Demo.mp4" type="video/mp4">
+  <source src="https://github.com/UMLCloudComputing/photosky/blob/main/PhotoSky_Demo.mp4" type="video/mp4">
   Your browser does not support the video tag.
 </video>
 
