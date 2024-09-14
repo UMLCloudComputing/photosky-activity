@@ -7,7 +7,7 @@ sidebar_position: 1
 Welcome to the PhotoSky tutorial! In this comprehensive guide, you'll learn how to build a cloud-based image management application from scratch using AWS, React, and Capacitor. PhotoSky is a mini-project activity developed by the UML Cloud Computing Club to demonstrate the power and flexibility of serverless architecture and cross-platform development.
 
 :::danger
-This project requires access to a Github Codespaces to work properly! <br/>
+This project requires access to Github Codespaces to work properly! <br/>
 Please ensure you have working access to Github Codespaces with a capable configuration! 8+ GB RAM.
 :::
 
