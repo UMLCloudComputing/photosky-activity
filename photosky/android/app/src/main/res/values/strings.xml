@@ -1,7 +1,0 @@
-<?xml version='1.0' encoding='utf-8'?>
-<resources>
-    <string name="app_name">photosky</string>
-    <string name="title_activity_main">photosky</string>
-    <string name="package_name">org.umlcloudcomputing.photosky</string>
-    <string name="custom_url_scheme">org.umlcloudcomputing.photosky</string>
-</resources>
