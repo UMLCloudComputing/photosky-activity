@@ -27,6 +27,24 @@ AWS CDK allows us to define cloud infrastructure using familiar programming lang
 
 3. Open `photosky_stack.py` in your preferred text editor. This is where we'll define our stack.
 
+## Initializing the AWS CDK
+
+Before we can use the CDK, we must initialize it. You can see that we import `PhotoskyStack`. We will create this later.
+
+```python
+#!/usr/bin/env python3
+import os
+from dotenv import load_dotenv
+import aws_cdk as cdk
+from photosky_stack import PhotoskyStack
+
+load_dotenv()
+
+app = cdk.App()
+PhotoskyStack(app, os.getenv("APP_NAME"),)
+app.synth()
+```
+
 ## Implementing the PhotoSky Stack
 
 Let's break down the `PhotoskyStack` class and implement it step by step:
@@ -164,55 +182,3 @@ class PhotoskyStack(Stack):
 
         bucket.grant_read_write(dockerFunc)
 ```
-
-## Deploying the Stack
-
-Now that we've implemented our stack, let's deploy it:
-
-1. First, make sure you're in the project root directory:
-
-   ```bash
-   cd ..
-   ```
-
-2. Synthesize the CloudFormation template:
-
-   ```bash
-   cdk synth
-   ```
-
-   This command will generate a CloudFormation template based on our CDK code.
-
-3. Deploy the stack:
-
-   ```bash
-   cdk deploy
-   ```
-
-   This command will deploy our stack to AWS. You'll be asked to confirm the changes before they're applied.
-
-4. Once the deployment is complete, CDK will output the URL of your API Gateway. Save this URL as you'll need it for the frontend.
-
-## Updating the .env File
-
-Now that we have our backend deployed, let's update our `.env` file with the API URL:
-
-1. Open the `.env` file in the root directory of the project.
-
-2. Find the `REACT_APP_API_URL` line and update it with the API Gateway URL you saved earlier:
-
-   ```
-   REACT_APP_API_URL=https://{YOUR_API_ID}.execute-api.{YOUR_REGION}.amazonaws.com/prod
-   ```
-
-## Conclusion
-
-Congratulations! You've successfully implemented and deployed the backend infrastructure for PhotoSky using AWS CDK. Here's what we've accomplished:
-
-- Created a Lambda function to handle our application logic
-- Set up an API Gateway to create a RESTful API
-- Created an S3 bucket for storing our images
-- Granted the necessary permissions for our Lambda function to interact with the S3 bucket
-- Deployed our infrastructure to AWS
-
-In the next section, we'll dive into implementing the Lambda function that will handle our application logic.
