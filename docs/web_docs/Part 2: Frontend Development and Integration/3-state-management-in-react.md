@@ -15,10 +15,10 @@ State in React represents the data that can change over time in your application
 
 React Hooks are functions that let you "hook into" React state and lifecycle features from function components. We'll be using several hooks in our PhotoSky application:
 
-1. `useState`: For managing local component state
-2. `useEffect`: For performing side effects in function components
-3. `useCallback`: For memoizing functions to optimize performance
-4. `useRef`: For creating mutable references that persist across re-renders
+1. [useState](https://react.dev/reference/react/useState): For managing local component state
+2. [useEffect](https://react.dev/reference/react/useEffect): For performing side effects in function components
+3. [useCallback](https://react.dev/reference/react/useCallback): For memoizing functions to optimize performance
+4. [useRef](https://react.dev/reference/react/useRef): For creating mutable references that persist across re-renders
 
 Let's see how we're using these hooks in our PhotoSky application.
 
@@ -52,7 +52,7 @@ These state variables manage different aspects of our application:
 
 ## Fetching Images and Error Handling
 
-We use the `useCallback` hook to memoize our `fetchImages` function, and the `useEffect` hook to call it when the component mounts. We also implement error handling and loading state management:
+We use the [useCallback](https://react.dev/reference/react/useCallback) hook to memoize our `fetchImages` function, and the [useEffect](https://react.dev/reference/react/useEffect) hook to call it when the component mounts. We also implement error handling and loading state management:
 
 ```jsx
 const fetchImages = useCallback(async () => {
@@ -108,7 +108,7 @@ useEffect(() => {
 
 ## Handling Image Upload and Camera Integration
 
-We use `useRef` to create a reference to the file input element, and `useCallback` to memoize our upload functions:
+We use [useRef](https://react.dev/reference/react/useRef) to create a reference to the file input element, and [useCallback](https://react.dev/reference/react/useCallback) to memoize our upload functions:
 
 ```jsx
 const fileInputRef = useRef(null);
@@ -177,7 +177,7 @@ REACT_APP_API_URL=https://your-api-gateway-url.amazonaws.com/prod
 
 ## Error Handling and Notifications
 
-We use the `notistack` library for displaying notifications to the user. The `enqueueSnackbar` function is used throughout the application to show success and error messages:
+We use the `notistack` library for displaying notifications to the user. The [enqueueSnackbar](https://notistack.com/api-reference#enqueuesnackbar-options) function is used throughout the application to show success and error messages:
 
 ```jsx
 import { useSnackbar } from 'notistack';

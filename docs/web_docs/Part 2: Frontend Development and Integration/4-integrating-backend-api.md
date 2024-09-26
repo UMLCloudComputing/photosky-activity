@@ -36,15 +36,19 @@ The `fetchImages` function retrieves the list of images from our backend:
 
 ```javascript
 const fetchImages = useCallback(async () => {
+  // set loading state to true
   setLoading(true);
   try {
+    // query api and set state with response
     const response = await axios.get(`${API_URL}/list-images`);
     setImages(response.data.images);
     enqueueSnackbar('Images loaded successfully', { variant: 'success' });
   } catch (error) {
+    // handle error
     console.error('Error fetching images:', error);
     enqueueSnackbar('Error fetching images', { variant: 'error' });
   } finally {
+    // will be called regardless of error
     setLoading(false);
   }
 }, [API_URL, enqueueSnackbar]);
@@ -68,18 +72,23 @@ const uploadImage = useCallback(async (file) => {
 
     const { url, fields } = presignedResponse.data;
     const formData = new FormData();
+
+    // append presigned url fields and uploaded file to formData
+    // the formData object is what will be submitted
     Object.entries(fields).forEach(([key, value]) => formData.append(key, value));
     formData.append('file', file);
 
-    // Upload the file directly to S3
+    // Upload the file
     await axios.post(url, formData, { headers: { 'Content-Type': 'multipart/form-data' } });
 
     fetchImages();
     enqueueSnackbar('Image uploaded successfully', { variant: 'success' });
   } catch (error) {
+    // handle error
     console.error('Error uploading image:', error);
     enqueueSnackbar('Error uploading image', { variant: 'error' });
   } finally {
+    // set loading state once we have finished
     setLoading(false);
   }
 }, [API_URL, enqueueSnackbar, fetchImages]);
@@ -91,23 +100,30 @@ We have two delete functions: one for deleting a single image and one for deleti
 
 ```javascript
 const handleDeleteImage = useCallback(async (id) => {
+  // set loading state
   setLoading(true);
   try {
+    // query api
     await axios.delete(`${API_URL}/delete-image/${id}`);
     fetchImages();
     enqueueSnackbar('Image deleted successfully', { variant: 'success' });
+    // close dialog once the image has been deleted
     setDialogOpen(false);
   } catch (error) {
+    // handle error
     console.error('Error deleting image:', error);
     enqueueSnackbar('Error deleting image', { variant: 'error' });
   } finally {
+    // set loading state once we have finished
     setLoading(false);
   }
 }, [API_URL, enqueueSnackbar, fetchImages]);
 
 const handleDeleteAllImages = useCallback(async () => {
+  // set loading state
   setLoading(true);
   try {
+    
     const deletePromises = images.map((image) => axios.delete(`${API_URL}/delete-image/${image.id}`));
     await Promise.all(deletePromises);
     fetchImages();

@@ -48,7 +48,6 @@ Let's update our `App.js` file to create the basic structure of our application:
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useSnackbar, SnackbarProvider } from 'notistack';
-import { Camera, CameraResultType } from '@capacitor/camera';
 
 // Import necessary Material-UI components and icons
 import { createTheme, ThemeProvider } from '@mui/material/styles';
@@ -97,7 +96,7 @@ export default function App() {
 }
 ```
 
-This sets up our basic app structure with Material-UI's `ThemeProvider` and `SnackbarProvider` for notifications.
+This sets up our basic app structure with Material-UI's [ThemeProvider](https://mui.com/material-ui/customization/theming/#theme-provider) and Notistack's [SnackbarProvider](https://notistack.com/api-reference) for notifications.
 
 ## Implementing the AppBar
 

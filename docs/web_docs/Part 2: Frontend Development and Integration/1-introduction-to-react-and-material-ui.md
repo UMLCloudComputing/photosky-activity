@@ -5,7 +5,7 @@ slug: /activities/part-2-frontend-development-and-integration/1-introduction-to-
 
 # Introduction to React, Material-UI, and Additional Libraries
 
-Welcome to Part 2 of the PhotoSky tutorial! In this section, we'll dive into the frontend development of our application using React, Material-UI, and several other powerful libraries. These tools will help us create a responsive, user-friendly interface for our cloud-based image management system.
+Welcome to Part 2 of the PhotoSky tutorial! In this section, we'll dive into the frontend development of our application using [React](https://react.dev), [Material-UI](https://mui.com/material-ui), and several other powerful libraries. These tools will help us create a responsive, user-friendly interface for our cloud-based image management system.
 
 ## What is React?
 
@@ -33,17 +33,14 @@ Key features of Material-UI include:
 
 In addition to React and Material-UI, our PhotoSky application uses several other libraries to enhance its functionality:
 
-### Axios
+### [Axios](https://axios-http.com/)
 
 Axios is a popular, promise-based HTTP client for the browser and Node.js. We use it to make API calls to our backend services.
 
-### Notistack
+### [Notistack](https://notistack.com/)
 
 Notistack is a notification library for React applications. It provides an easy way to display snackbars (brief messages) in our app, which we use for user feedback on actions like image uploads or deletions.
 
-### @capacitor/camera
-
-This library, part of the Capacitor framework, allows us to access the device's camera functionality. We use it to enable users to take photos directly within our app.
 
 ### @emotion/react and @emotion/styled
 
@@ -86,9 +83,6 @@ You can see the main dependencies in the `package.json` file:
 
 ```json
 "dependencies": {
-  "@capacitor/android": "^6.1.2",
-  "@capacitor/camera": "^6.0.2",
-  "@capacitor/core": "^6.1.2",
   "@emotion/react": "^11.13.3",
   "@emotion/styled": "^11.13.0",
   "@mui/icons-material": "^6.0.1",
@@ -152,7 +146,7 @@ export default function AppWrapper() {
 }
 ```
 
-In this example, we're using Material-UI's `AppBar`, `Toolbar`, `Typography`, and `Button` components to create a simple header for our application. We're also using the `ThemeProvider` for consistent theming, `CssBaseline` for baseline styles, and `SnackbarProvider` from notistack for notifications.
+In this example, we're using Material-UI's [AppBar](https://mui.com/material-ui/react-app-bar/), [Toolbar](https://mui.com/material-ui/api/toolbar/), [Typography](https://mui.com/material-ui/react-typography/), and [Button](https://mui.com/material-ui/react-button) components to create a simple header for our application. We're also using the [ThemeProvider](https://mui.com/material-ui/customization/theming/#theme-provider) for consistent theming, [CssBaseline](https://mui.com/material-ui/react-css-baseline/) for baseline styles, and [SnackbarProvider](https://notistack.com/api-reference) from notistack for notifications.
 
 ## Conclusion
 
