@@ -123,15 +123,17 @@ const handleDeleteAllImages = useCallback(async () => {
   // set loading state
   setLoading(true);
   try {
-    
+  // this will loop over all of the images, calling the api to delete each one
     const deletePromises = images.map((image) => axios.delete(`${API_URL}/delete-image/${image.id}`));
     await Promise.all(deletePromises);
     fetchImages();
     enqueueSnackbar('All images deleted successfully', { variant: 'success' });
   } catch (error) {
+    // handle error
     console.error('Error deleting all images:', error);
     enqueueSnackbar('Error deleting all images', { variant: 'error' });
   } finally {
+    // set loading state once we have finished
     setLoading(false);
   }
 }, [API_URL, images, enqueueSnackbar, fetchImages]);

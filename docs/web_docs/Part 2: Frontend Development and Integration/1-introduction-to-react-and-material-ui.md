@@ -41,6 +41,10 @@ Axios is a popular, promise-based HTTP client for the browser and Node.js. We us
 
 Notistack is a notification library for React applications. It provides an easy way to display snackbars (brief messages) in our app, which we use for user feedback on actions like image uploads or deletions.
 
+### [@capacitor/camera](https://capacitorjs.com/docs/apis/camera)
+
+This library, part of the Capacitor framework, allows us to access the device's camera functionality. We use it to enable users to take photos directly within our app.
+
 
 ### @emotion/react and @emotion/styled
 
@@ -83,6 +87,9 @@ You can see the main dependencies in the `package.json` file:
 
 ```json
 "dependencies": {
+  "@capacitor/android": "^6.1.2",
+  "@capacitor/camera": "^6.0.2",
+  "@capacitor/core": "^6.1.2",
   "@emotion/react": "^11.13.3",
   "@emotion/styled": "^11.13.0",
   "@mui/icons-material": "^6.0.1",
