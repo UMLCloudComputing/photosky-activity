@@ -3,6 +3,9 @@ sidebar_position: 1
 slug: /activities/part-2-frontend-development-and-integration/1-introduction-to-react-and-material-ui
 ---
 
+<!-- :::info
+This tutorial only covers creating the web app, but you can make PhotoSky into a mobile app by following [Part 3](/activities/part-3-mobile-app-integration) -->
+
 # Introduction to React, Material-UI, and Additional Libraries
 
 Welcome to Part 2 of the PhotoSky tutorial! In this section, we'll dive into the frontend development of our application using [React](https://react.dev), [Material-UI](https://mui.com/material-ui), and several other powerful libraries. These tools will help us create a responsive, user-friendly interface for our cloud-based image management system.
