@@ -25,6 +25,7 @@ First, ensure you have all the necessary dependencies installed. Your `package.j
 
 ```json
 "dependencies": {
+  "@capacitor/camera": "^6.0.2",
   "@emotion/react": "^11.13.3",
   "@emotion/styled": "^11.13.0",
   "@mui/icons-material": "^6.0.1",
@@ -37,7 +38,7 @@ First, ensure you have all the necessary dependencies installed. Your `package.j
 If any of these are missing, install them using npm:
 
 ```bash
-npm install @emotion/react @emotion/styled @mui/material @mui/icons-material notistack
+npm install @emotion/react @emotion/styled @mui/material @mui/icons-material notistack @capacitor/camera
 ```
 
 ## Implementing the Main App Component
@@ -48,6 +49,8 @@ Let's update our `App.js` file to create the basic structure of our application:
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import axios from 'axios';
 import { useSnackbar, SnackbarProvider } from 'notistack';
+
+// import things we'll need from capacitor
 import { Camera, CameraResultType } from '@capacitor/camera';
 
 // Import necessary Material-UI components and icons
@@ -97,7 +100,7 @@ export default function App() {
 }
 ```
 
-This sets up our basic app structure with Material-UI's `ThemeProvider` and `SnackbarProvider` for notifications.
+This sets up our basic app structure with Material-UI's [ThemeProvider](https://mui.com/material-ui/customization/theming/#theme-provider) and Notistack's [SnackbarProvider](https://notistack.com/api-reference) for notifications.
 
 ## Implementing the AppBar
 
@@ -148,8 +151,12 @@ Now, let's implement the Image Gallery component:
 
 ```jsx
 <Container sx={{ py: 8 }} maxWidth="md">
+  //conditionally render loading bar
   {loading && <LinearProgress />}
+
   {images.length > 0 ? (
+
+    // this will render if we have more than 0 images in the array
     <ImageList sx={{ width: '100%', height: 'auto' }} cols={3} rowHeight={164}>
       {images.map((image) => (
         <ImageListItem key={image.id} onClick={() => handleOpenDialog(image)}>
@@ -163,6 +170,7 @@ Now, let's implement the Image Gallery component:
       ))}
     </ImageList>
   ) : (
+    // this will render otherwise
     <Box
       sx={{
         display: 'flex',
@@ -180,12 +188,14 @@ Now, let's implement the Image Gallery component:
 </Container>
 ```
 
+
 ## Implementing the Bottom Navigation
 
 Add the Bottom Navigation component:
 
 ```jsx
 <Paper sx={{ position: 'fixed', bottom: 0, left: 0, right: 0 }} elevation={5}>
+  // the BottomNavigation component wraps around it's actions
   <BottomNavigation value={navValue} onChange={(event, newValue) => setNavValue(newValue)}>
     <BottomNavigationAction showLabel label="Refresh" icon={<RefreshIcon />} onClick={fetchImages} />
     <BottomNavigationAction showLabel label="Gallery" icon={<AppsIcon />} />
@@ -237,7 +247,7 @@ Let's add dialogs for image viewing, deletion, and upload:
 
 ## Implementing the Notification System
 
-We're using the `notistack` library for our notification system. It's already set up in our main `App` component with `SnackbarProvider`. To use it in our `Album` component, we use the `useSnackbar` hook:
+We're using the [notistack](https://notistack.com) library for our notification system. It's already set up in our main `App` component with `SnackbarProvider`. To use it in our `Album` component, we use the [useSnackbar](https://notistack.com/api-reference#enqueuesnackbar-options) hook:
 
 ```jsx
 const { enqueueSnackbar } = useSnackbar();
@@ -257,7 +267,7 @@ This allows us to show notifications for various actions throughout our applicat
 
 ## Handling Loading States
 
-To handle loading states, we've added a `LinearProgress` component that appears when the `loading` state is true:
+To handle loading states, we've added a [LinearProgress](https://mui.com/material-ui/react-progress/#linear) component that appears when the `loading` state is true:
 
 ```jsx
 {loading && <LinearProgress />}

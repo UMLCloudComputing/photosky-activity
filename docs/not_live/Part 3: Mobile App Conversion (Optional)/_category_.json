@@ -1,0 +1,10 @@
+{
+    "label": "Part 3: Mobile App Conversion",
+    "position": 4,
+    "link": {
+      "type": "generated-index",
+      "description": "Convert your React app into a mobile app using Capacitorjs.",
+      "slug": "part-3-mobile-app-conversion"
+    }
+  }
+  

@@ -1,7 +1,4 @@
----
-sidebar_position: 5
-slug: /activities/part-2-frontend-development-and-integration/5-capacitor-android-integration
----
+
 
 # Capacitor Android Integration
 

@@ -28,6 +28,7 @@
     },
     //"postCreateCommand": "sudo adduser $USER kvm && (sudo test -e /dev/kvm && sudo chown $USER /dev/kvm || true) && sudo chown $USER:$USER $ANDROID_HOME -R",
     //"postStartCommand": "echo 'sdk.dir=/usr/lib/android-sdk' > photosky/android/local.properties && npm install -g aws-cdk",
+
     "customizations": {
         "vscode": {
             "extensions": [

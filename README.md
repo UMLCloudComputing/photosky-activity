@@ -15,6 +15,72 @@
 
 Welcome to PhotoSky! PhotoSky is a mini-project activity developed by the UML Cloud Computing Club. The purpose of this project is to demonstrate the use of AWS services to create a serverless application. PhotoSky is a simple cross-platform application that allows users to upload images to an S3 bucket and view them in a gallery. The application also allows users to download the images and view previews.
 
+## 🚀 Quick Start
+
+1. **Clone the repository:**
+
+   ```bash
+   git clone https://github.com/UMLCloudComputing/photosky
+   cd photosky
+   ```
+
+2. **Install dependencies:**
+
+   - Install Python dependencies:
+
+     ```bash
+     pip install -r requirements.txt
+     ```
+   
+   - Install Node.js dependencies:
+
+     ```bash
+     cd photosky
+     npm install
+     ```
+
+   - Create npm build directory:
+
+     ```bash
+     npm run build
+     cd ..
+     ```
+
+3. **Running the web application:**
+
+   - Start the backend:
+
+     ```bash
+     cdk deploy
+     ```
+
+   - Start the frontend:
+
+     ```bash
+     cd photosky
+     npm start
+     ```
+
+   This will start the web app frontend on `http://localhost:3000`. 
+
+4. **Running the mobile app:**
+   
+   If you want to launch the Android mobile app in Android Studio, run the npx cap commands below:
+
+   - Sync the build output to the Android project:
+
+     ```bash
+     npx cap sync
+     ```
+
+   - Launch the Android project in Android Studio:
+
+     ```bash
+     npx cap open android
+     ```
+
+   This will open the Android project in Android Studio, where you can build and run the app on an emulator or a physical device.
+
 ## 🎥 Demo
 
 Check out our demo video to see PhotoSky in action:
