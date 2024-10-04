@@ -25,12 +25,18 @@ GitHub Codespaces provides a complete, configurable development environment in t
 3. **Verify the Environment**:
    - Open a new terminal in the Codespace.
    - Run the following commands to verify the setup:
-     ```bash
-     node --version
-     npm --version
-     aws --version
-     cdk --version
-     ```
+      - ```bash
+         node --version
+         ```
+      - ```bash
+         npm --version
+        ```
+      - ```bash  
+         aws --version
+        ```
+      - ```bash
+         cdk --version
+        ```
    - You should see version numbers for each tool, confirming they're installed correctly.
 
 ## Method 2: Using DevContainer Locally
@@ -46,10 +52,13 @@ If you prefer to work on your local machine while still benefiting from a consis
 ### Steps:
 
 1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/UMLCloudComputing/photosky.git
-   cd photosky
-   ```
+   - ```bash
+      git clone https://github.com/UMLCloudComputing/photosky.git
+     ```
+   - Change to the photosky the directory:
+     ```bash
+      cd photosky
+     ```
 
 2. **Open in VS Code**:
    ```bash
@@ -58,7 +67,7 @@ If you prefer to work on your local machine while still benefiting from a consis
 
 3. **Start DevContainer**:
    - VS Code will detect the DevContainer configuration and prompt you to reopen the project in a container.
-   - Click "Reopen in Container" when prompted, or use the command palette (F1) and select "Remote-Containers: Reopen in Container".
+   - Click **"Reopen in Container"** when prompted, or use the command palette (F1) and select **"Remote-Containers: Reopen in Container"**.
 
 4. **Wait for Container Build**:
    - The first time you open the project, it may take several minutes to build the container.
@@ -123,18 +132,18 @@ After setting up your development environment, you need to configure your AWS cr
    - Leave `REACT_APP_API_URL` empty for now. We'll fill this in later after deploying the backend
 
 4. **Configure AWS CLI**:
-   - In your terminal, run:
+   - In your terminal from within `/photosky` (`/workspaces/photosky/` is on Github Codespaces), run:
      ```
      make aws-login
      ```
    - This command uses the credentials from your `.env` file to configure the AWS CLI
 
 5. **Verify AWS Configuration**:
-   - Run the following command:
+   - Within the same directory run the following command:
      ```
      aws configure list
      ```
-   - If configured correctly, this command will display your AWS account information
+   - If configured correctly, this command will display your AWS account information.
 
 ## Environment Variables Explanation
 
