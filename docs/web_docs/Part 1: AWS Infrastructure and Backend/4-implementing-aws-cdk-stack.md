@@ -17,7 +17,7 @@ AWS CDK allows us to define cloud infrastructure using familiar programming lang
 
 ## ⌨️ Setting Up the CDK Project
 
-1. First, make sure you're in the project root directory. <br/> If you're not already in the root folder for the repository (`photosky-activity`) to do so with the following command
+1. First, make sure you're in the project root directory. <br/> If you're not already in the root folder for the project (`photosky-activity`) to do so with the following command
 
    ```bash
    cd photosky-activity

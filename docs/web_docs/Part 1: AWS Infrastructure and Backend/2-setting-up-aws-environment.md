@@ -143,14 +143,14 @@ After setting up your development environment, you need to configure your AWS cr
    :::
 
 5. **Verify AWS Configuration**:
-   - Within the same root directory of the repository run the following command:
+   - Within the same root directory of the project run the following command:
      ```
      aws configure list
      ```
    - If configured correctly, this command will display your AWS account information.
 
 ## 🐍 Installing required python packages for later stages
-From within the root directory of your repository (`photosky-activity` or `/workspaces/photosky-activity`) run the following command in the **terminal** to install the required python packages. <br/>
+From within the root directory of your project (`photosky-activity` or `/workspaces/photosky-activity`) run the following command in the **terminal** to install the required python packages. <br/>
 These packages will be used when we implement our infrastructure as code with our own stack
 
 ```bash
