@@ -9,10 +9,10 @@ In this final section of Part 1, we'll deploy our PhotoSky backend to AWS and th
 
 ## Deploying the Backend
 
-### Prerequisites
-- Ensure you have the AWS CLI configured with the correct credentials
-- Make sure you have the latest version of the AWS CDK installed
-- Verify that you're in the root directory of your project
+### ❗ Prerequisites
+1. Ensure you have the AWS CLI configured with the correct credentials
+2. Make sure you have the latest version of the AWS CDK installed
+3. Verify that you're in the root directory of your project
 
 ### Deployment Steps
 
@@ -26,55 +26,37 @@ In this final section of Part 1, we'll deploy our PhotoSky backend to AWS and th
    ```bash
    cdk deploy
    ```
-   This command will deploy our stack to AWS. You'll be prompted to confirm the changes before they're applied.
+:::info
+This command will deploy our stack to AWS. You'll be prompted to confirm the changes before they're applied.
+:::
 
 3. During the deployment, you'll see output detailing the resources being created. Pay attention to any warnings or errors.
 
-4. Once the deployment is complete, you'll see output containing the API Gateway URL. It will look something like this:
+4. Once the deployment is complete, you'll see output containing the API Gateway URL. It will look *something* like this:
    ```
    Outputs:
    PhotoskyStack.apiEndpoint12345678 = https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod/
    ```
    Copy this URL; you'll need it for testing and for your frontend.
 
-5. Update your `.env` file with this URL:
+5. Update your `.env` file with this URL by running the following command:
    ```bash
    echo "REACT_APP_API_URL=https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod" >> .env
    ```
-   Replace the URL with your actual API Gateway URL.
-
+:::note
+Replace the URL with your actual API Gateway URL you obtained in the previous step.
+:::
 ## Testing the Backend
 
 Now that our backend is deployed, let's thoroughly test each of our API endpoints. We'll use curl for these examples, but you could also use tools like Postman or a custom Python script for more advanced testing.
 
-### 1. List Images
+### 1. Get Presigned URL for Upload
 
-Test the endpoint to list all images:
-
-```bash
-curl https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod/list-images
-```
-
-Expected response:
-```json
-{
-  "images": [
-    {
-      "id": "image1.jpg",
-      "url": "https://your-bucket-name.s3.amazonaws.com/image1.jpg?AWSAccessKeyId=..."
-    },
-    ...
-  ]
-}
-```
-
-### 2. Get Presigned URL for Upload
-
-Test the endpoint to get a presigned URL for uploading an image:
+Test the endpoint to get a presigned URL for uploading an image by running the following command in your shell:
 
 ```bash
 curl -X POST \
-  https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod/get-presigned-url \
+  YOUR_PRESIGNED_URL \
   -H 'Content-Type: application/json' \
   -d '{"filename":"test-image.jpg", "filetype":"image/jpeg"}'
 ```
@@ -82,55 +64,97 @@ curl -X POST \
 Expected response:
 ```json
 {
-  "url": "https://your-bucket-name.s3.amazonaws.com/",
+  "url": "https://YOUR-BUCKET-NAME.s3.amazonaws.com/",
   "fields": {
     "key": "test-image.jpg",
-    "bucket": "your-bucket-name",
+    "bucket": "YOUR-BUCKET-NAME",
     "X-Amz-Algorithm": "AWS4-HMAC-SHA256",
     ...
   }
 }
 ```
+:::note
+Replace the `YOUR_PRESIGNED_URL` with the URL you obtained [before](#1-get-presigned-url-for-upload) from the response.<br/> 
+The filename parameter can also be changed to be specific to the name of the file you intend to upload in the next step.
+:::
 
-### 3. Upload an Image
+### 2. Upload an Image
 
-To actually upload an image using the presigned URL:
+To actually upload an image using the presigned URL use the following command in your shell:
 
 ```bash
-curl -X POST https://your-bucket-name.s3.amazonaws.com/ \
+curl -X POST YOUR_PRESIGNED_URL \
   -F key=test-image.jpg \
-  -F bucket=your-bucket-name \
+  -F bucket=YOUR-BUCKET-NAME \
   -F X-Amz-Algorithm=AWS4-HMAC-SHA256 \
   ... \
-  -F file=@/path/to/your/image.jpg
+  -F file=@/PATH-TO-YOUR-IMAGE.jpg
 ```
+:::note
+Replace the `YOUR_PRESIGNED_URL` with the URL you obtained [before](#1-get-presigned-url-for-upload) from the response.<br/> `YOUR-BUCKET-NAME` is specified within your presigned URL as the content between `https://` and `.s3.amazonaws.com/`. <br/>
+The `file` parameter should be specified with the path to the image you intend to your upload.
+:::
 
-Replace the fields with those from the previous response.
+### 3. List Images
+
+Test the endpoint to list all images:
+
+```bash
+curl YOUR_API_GATEWAY_URL/list-images
+```
+:::note
+Replace the `YOUR_API_GATEWAY_URL` with the URL you obtained [before](#deployment-steps) in step 4. This URL should be trailed with `/list-images`.
+:::
+
+Expected response:
+```json
+{
+  "images": [
+    {
+      "id": "YOUR_UPLOADED_IMAGE.jpg",
+      "url": "https://YOUR-BUCKET-NAME.s3.amazonaws.com/YOUR_UPLOADED_IMAGE.jpg?AWSAccessKeyId=..."
+    },
+    ...
+  ]
+}
+```
 
 ### 4. Get Image URL
 
-Test getting a URL for a specific image:
+Test getting a URL for a specific image by running teh following command in your shell:
 
 ```bash
-curl https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod/test-image.jpg
+curl YOUR_PRESIGNED_URL/YOUR_UPLOADED_IMAGE.jpg
 ```
 
 Expected response:
 ```json
-{"url": "https://your-bucket-name.s3.amazonaws.com/test-image.jpg?AWSAccessKeyId=..."}
+{"url": "https://YOUR-BUCKET-NAME.s3.amazonaws.com/test-image.jpg?AWSAccessKeyId=..."}
 ```
+
+::note
+Replace the `YOUR_PRESIGNED_URL` with the URL you obtained [before](#1-get-presigned-url-for-upload) from the response.<br/>
+Be sure to trail the URL with the name of the file you just uploaded.<br/>
+Be sure to encapsulate your final URL in double quotes ("...").
+:::
 
 ### 5. Get Image Preview URL
 
 Test getting a preview URL for an image:
 
 ```bash
-curl "https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod/test-image.jpg?preview=true"
+curl "YOUR_PRESIGNED_URL/YOUR_UPLOADED_IMAGE.jpg?preview=true"
 ```
+
+:::note
+Replace the `YOUR_PRESIGNED_URL` with the URL you obtained [before](#1-get-presigned-url-for-upload) from the response.<br/>
+Be sure to trail the URL with the name of image you just uploaded.<br/>
+:::
+
 
 Expected response:
 ```json
-{"url": "https://your-bucket-name.s3.amazonaws.com/preview_test-image.jpg?AWSAccessKeyId=..."}
+{"url": "https://YOUR-BUCKET-NAME.s3.amazonaws.com/preview_test-image.jpg?AWSAccessKeyId=..."}
 ```
 
 ### 6. Delete Image
@@ -138,8 +162,12 @@ Expected response:
 Test deleting an image:
 
 ```bash
-curl -X DELETE https://abcdefghij.execute-api.us-east-1.amazonaws.com/prod/delete-image/test-image.jpg
+curl -X DELETE YOUR_PRESIGNED_URL/delete-image/YOUR_UPLOADED_IMAGE.jpg
 ```
+:::note
+Replace the `YOUR_PRESIGNED_URL` with the URL you obtained [before](#1-get-presigned-url-for-upload) from the response.<br/>
+Be sure to trail the URL with the name of image you just uploaded.<br/>
+:::
 
 Expected response:
 ```json

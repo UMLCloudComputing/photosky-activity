@@ -3,7 +3,7 @@ sidebar_position: 3
 slug: /activities/part-1-aws-infrastructure-and-backend/3-designing-backend-architecture
 ---
 
-# Designing Backend Architecture
+# ✍ Designing Backend Architecture
 
 In this section, we'll dive into the backend architecture of our PhotoSky application. We'll explore the AWS services we're using, why we chose them, and how they work together to create a scalable, serverless backend.
 
@@ -18,7 +18,7 @@ PhotoSky uses a serverless architecture built on AWS. Here's a high-level overvi
 
 Let's explore each of these components in detail.
 
-## Amazon S3 (Simple Storage Service)
+## 🪣 Amazon S3 (Simple Storage Service)
 
 Amazon S3 is an object storage service that offers industry-leading scalability, data availability, security, and performance.
 
@@ -42,7 +42,7 @@ AWS Lambda is a serverless compute service that lets you run code without provis
 
 In PhotoSky, Lambda functions will handle operations like generating presigned URLs for S3, creating image previews, and managing image metadata.
 
-## Amazon API Gateway
+## 🌁 Amazon API Gateway
 
 Amazon API Gateway is a fully managed service that makes it easy for developers to create, publish, maintain, monitor, and secure APIs at any scale.
 
@@ -54,7 +54,7 @@ Amazon API Gateway is a fully managed service that makes it easy for developers 
 
 API Gateway will serve as the entry point for our frontend, routing requests to the appropriate Lambda functions.
 
-## AWS CDK (Cloud Development Kit)
+## 🧰 AWS CDK (Cloud Development Kit)
 
 While not a part of the runtime architecture, AWS CDK is crucial for defining and provisioning our infrastructure.
 
@@ -88,7 +88,7 @@ Here's a diagram of this architecture:
                                         | Amazon S3   |
                                         +-------------+
 ```
-
+<!-- 
 ## Code Preview
 
 Let's take a look at how we define this architecture using AWS CDK:
@@ -148,7 +148,7 @@ This code defines our entire backend infrastructure:
 - It creates a Lambda function, packaged as a Docker image.
 - It sets up an API Gateway that proxies all requests to our Lambda function.
 - It creates an S3 bucket for storing our images, with CORS configured.
-- It grants the Lambda function read and write access to the S3 bucket.
+- It grants the Lambda function read and write access to the S3 bucket. -->
 
 ## Conclusion
 

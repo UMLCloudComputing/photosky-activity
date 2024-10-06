@@ -3,7 +3,7 @@ sidebar_position: 2
 slug: /activities/part-1-aws-infrastructure-and-backend/2-setting-up-aws-environment
 ---
 
-# Setting Up Your AWS Environment
+# 🏞️ Setting Up Your AWS Environment
 
 In this section, we'll prepare your development environment and set up your AWS account to start building the PhotoSky application. We'll cover three methods: using GitHub Codespaces (recommended), using DevContainer locally, and manual setup. We'll also go through the process of setting up environment variables crucial for the project.
 
@@ -25,12 +25,18 @@ GitHub Codespaces provides a complete, configurable development environment in t
 3. **Verify the Environment**:
    - Open a new terminal in the Codespace.
    - Run the following commands to verify the setup:
-     ```bash
-     node --version
-     npm --version
-     aws --version
-     cdk --version
-     ```
+      - ```bash
+         node --version
+         ```
+      - ```bash
+         npm --version
+        ```
+      - ```bash  
+         aws --version
+        ```
+      - ```bash
+         cdk --version
+        ```
    - You should see version numbers for each tool, confirming they're installed correctly.
 
 ## Method 2: Using DevContainer Locally
@@ -46,10 +52,13 @@ If you prefer to work on your local machine while still benefiting from a consis
 ### Steps:
 
 1. **Clone the Repository**:
-   ```bash
-   git clone https://github.com/UMLCloudComputing/photosky.git
-   cd photosky
-   ```
+   - ```bash
+      git clone https://github.com/UMLCloudComputing/photosky.git
+     ```
+   - Change to the photosky the directory:
+     ```bash
+      cd photosky
+     ```
 
 2. **Open in VS Code**:
    ```bash
@@ -58,7 +67,7 @@ If you prefer to work on your local machine while still benefiting from a consis
 
 3. **Start DevContainer**:
    - VS Code will detect the DevContainer configuration and prompt you to reopen the project in a container.
-   - Click "Reopen in Container" when prompted, or use the command palette (F1) and select "Remote-Containers: Reopen in Container".
+   - Click **"Reopen in Container"** when prompted, or use the command palette (F1) and select **"Remote-Containers: Reopen in Container"**.
 
 4. **Wait for Container Build**:
    - The first time you open the project, it may take several minutes to build the container.
@@ -93,7 +102,7 @@ If you prefer to set up your environment manually or can't use the above methods
    cdk --version
    ```
 
-## Setting Up Your AWS Account
+## ☁️ Setting Up Your AWS Account
 
 After setting up your development environment, you need to configure your AWS credentials and project settings:
 
@@ -123,33 +132,60 @@ After setting up your development environment, you need to configure your AWS cr
    - Leave `REACT_APP_API_URL` empty for now. We'll fill this in later after deploying the backend
 
 4. **Configure AWS CLI**:
-   - In your terminal, run:
+   - In your terminal from within `/photosky-activity` (`/workspaces/photosky-activity/` is on Github Codespaces), run:
      ```
      make aws-login
      ```
    - This command uses the credentials from your `.env` file to configure the AWS CLI
 
+   :::info
+   Utilize the `cd` command to change directories if needed
+   :::
+
 5. **Verify AWS Configuration**:
-   - Run the following command:
+   - Within the same root directory of the project run the following command:
      ```
      aws configure list
      ```
-   - If configured correctly, this command will display your AWS account information
+   - If configured correctly, this command will display your AWS account information.
 
-## Environment Variables Explanation
+## 🐍 Installing required python packages for later stages
+From within the root directory of your project (`photosky-activity` or `/workspaces/photosky-activity`) run the following command in the **terminal** to install the required python packages. <br/>
+These packages will be used when we implement our infrastructure as code with our own stack
+
+```bash
+pip install -r requirements.txt
+```
+
+:::info
+Utilize the `cd` command within the terminal to change to the root directory of your respository. <br/>
+:::
+
+:::info
+Your current directory is always displayed in terminal to the left of where you can type. <br/>
+IE `user@localhost:~/photosky-activity$` <br/>
+The portion marked  `~/photosky-activity` is your current working directory.<br/>
+:::
+
+:::note
+If you're unsure about the basics of working with a linux shell. Be sure to review resources like [this](https://ubuntu.com/tutorials/command-line-for-beginners#6-a-bit-of-plumbing)
+:::
+
+
+## 🔉 Environment Variables Explanation
 
 - `AWS_ACCESS_KEY_ID` and `AWS_SECRET_ACCESS_KEY`: These are your AWS credentials used to authenticate your requests to AWS services
 - `AWS_DEFAULT_REGION`: Specifies the AWS region where your resources will be created (e.g., us-east-1)
 - `APP_NAME`: A unique identifier for your application, used to name AWS resources
 - `REACT_APP_API_URL`: Will store the URL of your API Gateway after backend deployment
 
-## Important Notes
+## ❗ Important Notes
 
 - Never commit your `.env` file to version control. It's already included in `.gitignore` to prevent accidental commits
 - If you accidentally expose your AWS credentials, immediately deactivate them in the AWS Console and create new ones
 - The `make aws-login` command in the Makefile is a convenient way to set up AWS CLI with your credentials, but make sure you understand what it does before running it
 
-## Conclusion
+## 🛣️  Conclusion
 
 You now have your development environment set up and your AWS account configured for the PhotoSky project. Whether you chose to use GitHub Codespaces, DevContainer locally, or a manual setup, you're ready to start developing.
 
